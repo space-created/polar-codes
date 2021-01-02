@@ -1,0 +1,143 @@
+#include <utility>
+
+#ifndef POLARC_POLARCODE_H
+#define POLARC_POLARCODE_H
+
+#define u8 uint8_t
+#define u16 uint16_t
+
+#include <cstdint>
+#include <vector>
+#include <math.h>
+#include <stack>
+#include <limits>
+#include <algorithm>
+#include <sstream>
+#include <iostream>
+#include <cmath>
+
+using namespace std;
+
+class PolarCode {
+
+public:
+
+    PolarCode(u8 num_layers,
+              u16 info_length,
+              double epsilon,
+              u16 crc_size,
+              bool is_subcode,
+              vector<u8> poly,
+              u16 bch_info_length,
+              u16 bch_distance)
+              : n(num_layers),
+                info_length(info_length),
+                epsilon(epsilon),
+                crc_size(crc_size),
+                is_subcode(is_subcode),
+                poly(std::move(poly)),
+                bch_info_length(bch_info_length),
+                bch_distance(bch_distance) {
+
+        word_length = (u16) (1 << n);
+        frozen_bits.resize(word_length);
+        bit_rev_matrix_order.resize(word_length);
+        get_bit_rev_order();
+        if (is_subcode) {
+            build_constraint_matrix();
+        }
+        initialize_frozen_bits();
+        list_size = 1; // default
+        decoded_info_bits.resize(info_length);
+    }
+
+    vector<u8> encode(vector<u8> info_bits);
+
+    vector<u8> decode(vector<double>& p1, vector<double>& p0, u16 ls);
+
+    vector<double> get_word_error_rate(vector<double> ebno_vec, u8 list_size, size_t min_error_amount,
+                                       size_t max_amount_runs);
+
+private:
+
+    u8 n;
+    u16 info_length;
+    u16 word_length;
+    u16 crc_size;
+
+    double epsilon;
+
+    vector<int> frozen_bits;
+    vector<u16> channel_order_descending;
+    vector<vector<u8>> crc_matrix;
+    vector<u16> bit_rev_matrix_order;
+
+    void initialize_frozen_bits();
+
+    void get_bit_rev_order();
+
+    u16 list_size;
+
+    // subcode:
+    bool is_subcode;
+    vector<u8> poly;
+    u16 bch_info_length;
+    u16 bch_distance;
+    vector<int> frozen_bits_num_map;
+    std::vector<std::vector<u8> > constraint_matrix;
+    void build_constraint_matrix();
+    vector<vector<u8> > build_bch_check_matrix();
+    vector<vector<u8> > kronecker_product();
+    vector<vector<u8> > get_a_matrix(vector<vector<u8> >& f_matrix);
+    vector<vector<u8> > transpose_matrix(vector<vector<u8> >& a_matrix);
+    vector<vector<u8> > get_matrix_product(vector<vector<u8> > &a, vector<vector<u8> > &b);
+    size_t col_max(const std::vector<std::vector<u8> > &matrix, size_t col);
+    size_t left_col_max(const std::vector<std::vector<u8> > &matrix, size_t col);
+    void triangulation(std::vector<std::vector<u8> > &matrix);
+    void left_triangulation(std::vector<std::vector<u8> > &matrix);
+    void remove_zero_rows(std::vector<std::vector<u8> > &matrix);
+
+
+    stack<u16> inactive_path_indices;
+    vector<u16> active_path;
+    vector<vector<double *>> array_pointer_P;
+    vector<vector<u8 *>> array_pointer_C;
+    vector<u8 *> array_pointer_info;
+    vector<vector<u16>> path_index_to_array_index;
+    vector<stack<u16>> inactive_array_indices;
+    vector<vector<u16>> array_reference_count;
+
+    vector<double> probabilities;
+    vector<u8> contForks;
+    vector<double> probForks;
+    vector<u8> decoded_info_bits;
+
+    void initialize_data_structures();
+
+    u16 assign_initial_path();
+
+    u16 clone_path(u16 l);
+
+    void kill_path(u16 l);
+
+    double *get_array_pointer_P(u16 lambda, u16 l);
+
+    u8 *get_array_pointer_C(u16 lambda, u16 l);
+
+    void recursively_calc_P(u16 lambda, u16 phi);
+
+    void recursively_update_C(u16 lambda, u16 phi);
+
+    void continue_paths_frozen_bit(u16 phi);
+
+    void continue_paths_unfrozen_bit(u16 phi);
+
+    u16 find_most_probable_path(bool check_crc);
+
+    bool crc_check(const u8 *info_bits_padded);
+
+    static u8 get_random_bool();
+};
+
+
+#endif //POLARC_POLARCODE_H
