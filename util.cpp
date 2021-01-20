@@ -1,9 +1,10 @@
 #include "PolarCode.h"
-#include <random>
+#include <ctime>
 
-u8 PolarCode::get_random_bool() {
-    uniform_int_distribution<> bool_dist(0, 1);
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    return bool_dist(mt);
+vector<u8> PolarCode::get_random_boolean_vector(size_t size) {
+    vector<u8> random_vector(size);
+    for (size_t i = 0; i < size; ++i) {
+        random_vector.at(i) = rand() % 2;
+    }
+    return random_vector;
 }

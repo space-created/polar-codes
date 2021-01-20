@@ -8,21 +8,84 @@ vector<u8> PolarCode::encode(vector<u8> info_bits) {
     for (size_t i = 0; i < info_length; ++i) {
         info_bits_padded.at(channel_order_descending.at(i)) = info_bits.at(i);
     }
+//    for (int i = 0; i < channel_order_descending.size(); ++i) {
+//        cout << channel_order_descending.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
+
+//    for (int i = 0; i < frozen_bits.size(); ++i) {
+//        cout << frozen_bits.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
+//    for (int i = 0; i < info_bits.size(); ++i) {
+//        cout << (int) info_bits.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
+//    for (int i = 0; i < info_bits_padded.size(); ++i) {
+//        cout << (int) info_bits_padded.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
+
     if (is_subcode) {
-        frozen_bits_num_map.resize(frozen_bits.size(), -1);
-        size_t i1 = 0;
-        for (size_t j_i = 0; j_i < frozen_bits.size(); ++j_i) {
-            if (frozen_bits.at(j_i)) {
-                for (size_t s = 0; s < j_i; ++s) {
-                    info_bits_padded.at(j_i) =
-                            (info_bits_padded.at(j_i) + info_bits_padded.at(s) * constraint_matrix.at(i1).at(s)) % 2;
-                }
-                frozen_bits_num_map.at(j_i) = i1;
-                i1++;
+//        vector<pair<int, int> > j_i(word_length - info_length);
+//        for (size_t i = 0; i < j_i.size(); ++i) {
+//            int the_most_right_one_pos = find_the_most_right_one_pos(constraint_matrix.at(i));
+////            j_i.at(i) = {the_most_right_one_pos, i};
+//            frozen_bits_num_map.at(the_most_right_one_pos) = i;
+//        }
+//        sort(begin(j_i),
+//             end(j_i),
+//             [&](pair<int, int> p1, pair<int, int> p2) {
+//                 return p1.first < p2.first;
+//             });
+//        for (size_t i = 0; i < j_i.size(); ++i) {
+//            int right_one_pos = j_i.at(i).first;
+//            int row_num = j_i.at(i).second;
+//            for (int s = 0; s < right_one_pos; ++s) {
+//                info_bits_padded.at(right_one_pos) =
+//                        (info_bits_padded.at(right_one_pos) +
+//                         info_bits_padded.at(s) * constraint_matrix.at(row_num).at(s)) % 2;
+//            }
+//        }
+//        for (int i = 0; i < frozen_bits_num_map.size(); ++i) {
+//            if (frozen_bits_num_map.at(i) != -1) {
+//                int right_one_pos = i;
+//                int row_num = frozen_bits_num_map.at(i);
+//                for (int s = 0; s < right_one_pos; ++s) {
+//                    info_bits_padded.at(right_one_pos) =
+//                            (info_bits_padded.at(right_one_pos) +
+//                             info_bits_padded.at(s) * constraint_matrix.at(row_num).at(s)) % 2;
+//                }
+//            }
+//        }
+        for (int i = J.size() - 1; i >= 0; --i) {
+            int right_one_pos = J.at(i);
+            int row_num = i;
+//            cout << "\nu[" + to_string(J.at(i)) + "] = 0";
+            for (int s = 0; s < right_one_pos; ++s) {
+//                if (constraint_matrix.at(row_num).at(s) != 0 && info_bits_padded.at(s) != 0) {
+//
+//                    cout << " + u[" + to_string(s) + "]";
+//                }
+
+                info_bits_padded.at(right_one_pos) =
+                        (info_bits_padded.at(right_one_pos) +
+                         info_bits_padded.at(s) * constraint_matrix.at(row_num).at(s)) % 2;
             }
+
         }
     }
-
+//    cout << '\n';
+//    cout << '\n';
+//    for (int i = 0; i < info_bits_padded.size(); ++i) {
+//        cout << (int) info_bits_padded.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
     for (size_t i = info_length; i < info_length + crc_size; ++i) {
         u8 crc_bit = 0;
         for (size_t j = 0; j < info_length; ++j) {

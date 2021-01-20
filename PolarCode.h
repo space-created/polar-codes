@@ -8,20 +8,19 @@
 
 #include <cstdint>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <stack>
 #include <limits>
 #include <algorithm>
 #include <sstream>
 #include <iostream>
-#include <cmath>
+#include <unordered_map>
 
 using namespace std;
 
 class PolarCode {
 
 public:
-
     PolarCode(u8 num_layers,
               u16 info_length,
               double epsilon,
@@ -43,10 +42,12 @@ public:
         frozen_bits.resize(word_length);
         bit_rev_matrix_order.resize(word_length);
         get_bit_rev_order();
+
+        initialize_frozen_bits();
         if (is_subcode) {
             build_constraint_matrix();
         }
-        initialize_frozen_bits();
+
         list_size = 1; // default
         decoded_info_bits.resize(info_length);
     }
@@ -84,6 +85,9 @@ private:
     u16 bch_info_length;
     u16 bch_distance;
     vector<int> frozen_bits_num_map;
+    vector<int> frozen_bits_num_order;
+    unordered_map<int, int> T;
+    vector<int> J;
     std::vector<std::vector<u8> > constraint_matrix;
     void build_constraint_matrix();
     vector<vector<u8> > build_bch_check_matrix();
@@ -91,12 +95,15 @@ private:
     vector<vector<u8> > get_a_matrix(vector<vector<u8> >& f_matrix);
     vector<vector<u8> > transpose_matrix(vector<vector<u8> >& a_matrix);
     vector<vector<u8> > get_matrix_product(vector<vector<u8> > &a, vector<vector<u8> > &b);
-    size_t col_max(const std::vector<std::vector<u8> > &matrix, size_t col);
-    size_t left_col_max(const std::vector<std::vector<u8> > &matrix, size_t col);
-    void triangulation(std::vector<std::vector<u8> > &matrix);
-    void left_triangulation(std::vector<std::vector<u8> > &matrix);
     void remove_zero_rows(std::vector<std::vector<u8> > &matrix);
 
+
+    int find_the_most_right_one_pos(std::vector<u8> &row_vector);
+    size_t right_col_max(const std::vector<std::vector<u8> > &matrix, size_t row, size_t col);
+    int count_right_zero_columns(std::vector<std::vector<u8> > &matrix, int row_pos, int pos);
+    void right_triangulation(std::vector<std::vector<u8> > &matrix);
+    void matrix_reduction(vector<vector<u8>>& matrix);
+    void sort_by_right_one(vector<vector<u8>>& matrix);
 
     stack<u16> inactive_path_indices;
     vector<u16> active_path;
@@ -136,7 +143,7 @@ private:
 
     bool crc_check(const u8 *info_bits_padded);
 
-    static u8 get_random_bool();
+    static vector<u8> get_random_boolean_vector(size_t size);
 };
 
 

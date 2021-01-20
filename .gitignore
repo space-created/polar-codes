@@ -1,3 +1,4 @@
 dist
 cmake-build-debug
 .idea
+boost

@@ -18,6 +18,13 @@ void PolarCode::initialize_frozen_bits() {
         }
     }
 
+//    cout << '\n';
+//    for (int i = 0; i < channel_vec.size(); ++i) {
+//        cout << channel_vec.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
+
     channel_order_descending.resize(word_length);
     size_t n_t(0);
     generate(begin(channel_order_descending), end(channel_order_descending), [&] { return n_t++; });
@@ -25,10 +32,17 @@ void PolarCode::initialize_frozen_bits() {
     sort(begin(channel_order_descending),
          end(channel_order_descending),
          [&](int i1, int i2) {
+//             return channel_vec.at(i1) < channel_vec.at(i2);
              return channel_vec.at(bit_rev_matrix_order.at(i1)) < channel_vec.at(bit_rev_matrix_order.at(i2));
          });
     u16 effective_info_length = info_length;
-
+//    cout << '\n';
+//    cout << '\n';
+//    for (int i = channel_vec.size() - 1; i >=0; --i) {
+//        cout << channel_vec.at(channel_order_descending.at(i)) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
     for (u16 i = 0; i < effective_info_length; ++i) {
         frozen_bits.at(channel_order_descending.at(i)) = 0;
     }
@@ -39,17 +53,8 @@ void PolarCode::initialize_frozen_bits() {
     crc_matrix.resize(crc_size);
     for (u8 bit = 0; bit < crc_size; ++bit) {
         crc_matrix.at(bit).resize(info_length);
-        for (u16 info_bit = 0; info_bit < info_length; ++info_bit) {
-            crc_matrix.at(bit).at(info_bit) = (u8) (get_random_bool() % 2);
-        }
+        crc_matrix.at(bit) = get_random_boolean_vector(info_length);
     }
-    cout << endl;
-
-    for (size_t i = 0; i < frozen_bits.size(); ++i) {
-        cout << frozen_bits.at(i) << ' ';
-    }
-    cout << endl;
-
 }
 
 void PolarCode::get_bit_rev_order() {
@@ -62,4 +67,3 @@ void PolarCode::get_bit_rev_order() {
         }
     }
 }
-

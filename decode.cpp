@@ -263,9 +263,28 @@ void PolarCode::continue_paths_frozen_bit(u16 phi) {
         u8 *c_m = get_array_pointer_C(n, l);
         if (is_subcode) {
             u8 value = 0;
+            // TODO: read article about SC List Decoding and try to figure out where changes are needed
+//            cout << '\n';
+//            cout << phi << ' ';
+//            cout << '\n';
             for (size_t s = 0; s < phi; ++s) {
-                value = (value + array_pointer_info.at(l)[s] * constraint_matrix[frozen_bits_num_map[phi]][s]) % 2;
+//                cout << (int) array_pointer_info.at(l)[s] << ' ';
+//                if (((int) array_pointer_info.at(l)[s]) != 0 && ((int) array_pointer_info.at(l)[s]) != 1) {
+//                    cout << (int) array_pointer_info.at(l)[s] << "Not one or zero!";
+//                }
+//                if (frozen_bits_num_map[phi] != -1) {
+//                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[frozen_bits_num_order[phi]][s]) % 2;
+//                }
+//                for (int t_phi = 0; t_phi < J.size(); ++t_phi) {
+//                    if (phi == J.at(t_phi)) {
+//                        value = (value + array_pointer_info.at(l)[s] * constraint_matrix[t_phi][s]) % 2;
+//                    }
+//                }
+                if (T.find(phi) != T.end()) {
+                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T.at(phi)][s]) % 2;
+                }
             }
+//            cout << '\n';
             c_m[(phi % 2)] = value;
             array_pointer_info.at(l)[phi] = value;
         } else {
