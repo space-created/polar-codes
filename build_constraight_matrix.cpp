@@ -1,30 +1,21 @@
 #include "GaloisFieldPolynomial.h"
 #include "PolarCode.h"
-
+// TODO: figure out why there are 119 rows instead of 131 in the V matrix?
 void PolarCode::build_constraint_matrix() {
     vector<vector<u8> > check_matrix = build_bch_check_matrix();
-    cout << '\n' << check_matrix.size() << ' ' << check_matrix[0].size() << '\n';
     vector<vector<u8> > f_matrix = kronecker_product();
 
     vector<vector<u8> > a_matrix = get_a_matrix(f_matrix);
     vector<vector<u8> > a_transposed_matrix = transpose_matrix(a_matrix);
     vector<vector<u8> > h_a_t_product = get_matrix_product(check_matrix, a_transposed_matrix);
 
-    cout << '\n' << h_a_t_product.size() << ' ' << h_a_t_product[0].size() << '\n';
-
     right_triangulation(h_a_t_product);
 
 
-//    sort_by_right_one(h_a_t_product);
-//    matrix_reduction(h_a_t_product);
+    sort_by_right_one(h_a_t_product);
+    matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
-
-//    for (auto & i : h_a_t_product) {
-//        for (size_t j = 0; j < h_a_t_product.at(0).size(); ++j) {
-//            cout << (int) i.at(j) << ' ';
-//        }
-//        cout << endl;
-//    }
+    apply_dzs_type_b();
     cout << '\n' << constraint_matrix.size() << ' ' << constraint_matrix[0].size() << '\n';
 
     for (auto & i : constraint_matrix) {
@@ -34,53 +25,59 @@ void PolarCode::build_constraint_matrix() {
         cout << endl;
     }
 
+    // frozen_bits - vector with frozen positions - 1 and unfrozen (info) - 0
+    // frozen_bits_num_map - vector with -1 if it is non dynamic frozen bit and the number
+    // of the V matrix row on the most right 1 position in this V matrix row
     frozen_bits_num_map.resize(frozen_bits.size(), -1);
+    // frozen_bits_num_order - isn't needed for now
     frozen_bits_num_order.resize(frozen_bits.size(), -1);
-    J.resize(constraint_matrix.size(), -1);
 
+    // J - is the most right 1 position in V from 0 row to V.size() - 1: e.g. 0 - 960, 1 - 928
+    J.resize(constraint_matrix.size(), -1);
+    // T - is the map which maps the position of the most right 1 to row number of V: e.g. 960 -> 0
+    T_arr.resize(constraint_matrix[0].size(), -1);
     for (size_t i = 0; i < constraint_matrix.size(); ++i) {
 
         frozen_bits_num_map.at(find_the_most_right_one_pos(constraint_matrix.at(i))) = i;
     }
     for (size_t i = 0; i < J.size(); ++i) {
 
-        J.at(i) = find_the_most_right_one_pos(constraint_matrix.at(i));
-        T.insert({J.at(i), i});
+        int one_pos = find_the_most_right_one_pos(constraint_matrix.at(i));
+        J.at(i) = one_pos;
+        T.insert({one_pos, i});
+        T_arr.at(one_pos) = i;
     }
-    int pointer1 = 0;
-    int pointer2 = 0;
 
-    while (pointer1 < frozen_bits_num_map.size()) {
-        if (frozen_bits_num_map.at(pointer1) != -1 && frozen_bits.at(pointer2) != 0) {
-            frozen_bits_num_order.at(pointer2) = frozen_bits_num_map.at(pointer1);
-            pointer1++;
-            pointer2++;
-        } else if (frozen_bits_num_map.at(pointer1) == -1) {
-            pointer1++;
-        } else {
-            pointer2++;
-        }
-    }
-    cout << '\n';
+
+    cout << '\n'<< "J: ";
     for (int i = 0; i < J.size(); ++i) {
         cout << (int) J.at(i) << ' ';
     }
     cout << '\n';
-    cout << '\n';
+    cout << '\n' << "frozen_bits_num_map: ";
     for (int i = 0; i < frozen_bits_num_map.size(); ++i) {
         cout << (int) frozen_bits_num_map.at(i) << ' ';
     }
+
+
+//    cout << '\m'<< "frozen_bits_pos: ";
+//    for (int i = frozen_bits.size() - 1; i >= 0; i--) {
+//        if (frozen_bits[i] == 1) {
+//            cout << (int) i << ' ';
+//        }
+//    }
     cout << '\n';
-    for (int i = 0; i < frozen_bits.size(); ++i) {
-        cout << (int) frozen_bits.at(i) << ' ';
-    }
-    cout << '\n';
-    cout << '\n';
+    cout << '\n' << "frozen_bits_num_order: ";
     for (int i = 0; i < frozen_bits_num_order.size(); ++i) {
         cout << (int) frozen_bits_num_order.at(i) << ' ';
     }
     cout << '\n';
 }
+
+void PolarCode::apply_dzs_type_b() {
+
+}
+
 
 vector<vector<u8> > PolarCode::build_bch_check_matrix() {
     vector<vector<u8> > h(bch_distance - 1, vector<u8>(word_length));
@@ -88,33 +85,32 @@ vector<vector<u8> > PolarCode::build_bch_check_matrix() {
     for (size_t i = 0; i < bch_distance - 1; ++i) {
         h.at(i).at(0) = 0;
         for (size_t j = 1; j < word_length; ++j) {
-            auto gf_pol = GaloisFieldPolynomial(j, n);
+            auto gf_pol = GaloisFieldPolynomial(j, m);
             auto mod_poly = GaloisFieldPolynomial(poly, poly.size());
             h.at(i).at(j) = GaloisFieldPolynomial::power_by_modulo(b + i, gf_pol,
                                                              mod_poly).get_representation(); // ^ (b + i)).poly()
         }
     }
 
-    vector<vector<u8> > check_matrix(n * (bch_distance - 1), vector<u8>(word_length, 0));
-
+    vector<vector<u8> > check_matrix(m * (bch_distance - 1), vector<u8>(word_length, 0));
 
     for (size_t i = 0; i < bch_distance - 1; ++i) {
         for (size_t j = 0; j < word_length; ++j) {
             u16 temp = h.at(i).at(j);
-            for (size_t z = n; z > 0; z--) {
-                check_matrix.at(i * n + z - 1).at(j) = temp % 2;
+            for (size_t z = m; z > 0; z--) {
+                check_matrix.at(i * m + z - 1).at(j) = temp % 2;
                 temp /= 2;
             }
         }
     }
-    check_matrix.at(n - 1).at(0) = 1;
+    check_matrix.at(m - 1).at(0) = 1;
 
 //    for (size_t i = 0; i < check_matrix.size(); ++i) {
 //        for (size_t j = 0; j < check_matrix.at(0).size(); ++j) {
 //            cout << (int) check_matrix.at(i).at(j) << ' ';
 //        }
 //        if (!((i + 1) % 6)) {
-//            cout << "\n\n";
+//            cout << "\m\m";
 //        }
 //        cout << endl;
 //    }
@@ -158,7 +154,7 @@ vector<vector<u8> > PolarCode::kronecker_product() {
                                          {1, 1}};
     vector<vector<u8> > product = {{1, 0},
                                    {1, 1}};
-    for (size_t i = 0; i < n - 1; ++i) {
+    for (size_t i = 0; i < m - 1; ++i) {
         vector<vector<u8> > new_product(product.size() * arikan_kernel.size(),
                                         vector<u8>(product[0].size() * arikan_kernel[0].size(), 0));
 

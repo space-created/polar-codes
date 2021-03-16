@@ -16,7 +16,7 @@ vector<u8> PolarCode::decode(vector<double> &p1, vector<double> &p0, u16 ls) {
     }
 
     for (u16 phi = 0; phi < word_length; ++phi) {
-        recursively_calc_P(n, phi);
+        recursively_calc_P(m, phi);
 
         if (frozen_bits.at(phi) == 1) {
             continue_paths_frozen_bit(phi);
@@ -24,20 +24,32 @@ vector<u8> PolarCode::decode(vector<double> &p1, vector<double> &p0, u16 ls) {
             continue_paths_unfrozen_bit(phi);
         }
         if ((phi % 2) == 1) {
-            recursively_update_C(n, phi);
+            recursively_update_C(m, phi);
         }
     }
     u16 most_probable_path = find_most_probable_path((bool) crc_size);
 
     u8 *c_0 = array_pointer_info.at(most_probable_path);
 
-    for (u16 beta = 0; beta < info_length; ++beta) {
-        decoded_info_bits.at(beta) = c_0[channel_order_descending.at(beta)];
+    if (is_subcode) {
+        int i = 0;
+        int pos = 0;
+        while (i < info_length) {
+            if (frozen_bits.at(channel_order_descending.at(pos)) != 1) {
+                decoded_info_bits.at(i) = c_0[channel_order_descending.at(pos)];
+                i++;
+            }
+            pos++;
+        }
+    } else {
+        for (u16 beta = 0; beta < info_length; ++beta) {
+            decoded_info_bits.at(beta) = c_0[channel_order_descending.at(beta)];
+        }
     }
 
     for (u16 s = 0; s < list_size; ++s) {
         delete[] array_pointer_info.at(s);
-        for (u16 lambda = 0; lambda < n + 1; ++lambda) {
+        for (u16 lambda = 0; lambda < m + 1; ++lambda) {
 
             delete[] array_pointer_P.at(lambda).at(s);
 
@@ -57,42 +69,42 @@ void PolarCode::initialize_data_structures() {
     active_path.resize(list_size);
 
 
-    array_pointer_P.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i) {
+    array_pointer_P.resize(m + 1);
+    for (int i = 0; i < m + 1; ++i) {
         array_pointer_P.at(i).resize(list_size);
     }
 
 
-    array_pointer_C.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i) {
+    array_pointer_C.resize(m + 1);
+    for (int i = 0; i < m + 1; ++i) {
         array_pointer_C.at(i).resize(list_size);
     }
 
     array_pointer_info.resize(list_size);
 
-    path_index_to_array_index.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i) {
+    path_index_to_array_index.resize(m + 1);
+    for (int i = 0; i < m + 1; ++i) {
         path_index_to_array_index.at(i).resize(list_size);
     }
 
-    inactive_array_indices.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i) {
+    inactive_array_indices.resize(m + 1);
+    for (int i = 0; i < m + 1; ++i) {
         while (!inactive_array_indices.at(i).empty()) {
             inactive_array_indices.at(i).pop();
         }
     }
 
-    array_reference_count.resize(n + 1);
-    for (int i = 0; i < n + 1; ++i) {
+    array_reference_count.resize(m + 1);
+    for (int i = 0; i < m + 1; ++i) {
         array_reference_count.at(i).resize(list_size);
     }
     for (u16 s = 0; s < list_size; ++s) {
         array_pointer_info.at(s) = new u8[word_length]();
-        for (u16 lambda = 0; lambda < n + 1; ++lambda) {
+        for (u16 lambda = 0; lambda < m + 1; ++lambda) {
 
-            array_pointer_P.at(lambda).at(s) = new double[2 * (1 << (n - lambda))]();
+            array_pointer_P.at(lambda).at(s) = new double[2 * (1 << (m - lambda))]();
 
-            array_pointer_C.at(lambda).at(s) = new u8[2 * (1 << (n - lambda))]();
+            array_pointer_C.at(lambda).at(s) = new u8[2 * (1 << (m - lambda))]();
             array_reference_count.at(lambda).at(s) = 0;
             inactive_array_indices.at(lambda).push(s);
         }
@@ -109,7 +121,7 @@ u16 PolarCode::assign_initial_path() {
     u16 l = inactive_path_indices.top();
     inactive_path_indices.pop();
     active_path.at(l) = 1;
-    for (u16 lambda = 0; lambda < n + 1; ++lambda) {
+    for (u16 lambda = 0; lambda < m + 1; ++lambda) {
         u16 s = inactive_array_indices.at(lambda).top();
         inactive_array_indices.at(lambda).pop();
         path_index_to_array_index.at(lambda).at(l) = s;
@@ -123,7 +135,7 @@ u16 PolarCode::clone_path(u16 l) {
     inactive_path_indices.pop();
     active_path.at(l_p) = 1;
 
-    for (u16 lambda = 0; lambda < n + 1; ++lambda) {
+    for (u16 lambda = 0; lambda < m + 1; ++lambda) {
         u16 s = path_index_to_array_index.at(lambda).at(l);
         path_index_to_array_index.at(lambda).at(l_p) = s;
         array_reference_count.at(lambda).at(s)++;
@@ -134,7 +146,7 @@ u16 PolarCode::clone_path(u16 l) {
 void PolarCode::kill_path(u16 l) {
     active_path.at(l) = 0;
     inactive_path_indices.push(l);
-    for (u16 lambda = 0; lambda < n + 1; ++lambda) {
+    for (u16 lambda = 0; lambda < m + 1; ++lambda) {
         u16 s = path_index_to_array_index.at(lambda).at(l);
         array_reference_count.at(lambda).at(s)--;
         if (array_reference_count.at(lambda).at(s) == 0) {
@@ -153,9 +165,9 @@ double *PolarCode::get_array_pointer_P(u16 lambda, u16 l) {
         inactive_array_indices.at(lambda).pop();
 
 
-        copy(array_pointer_P.at(lambda).at(s), array_pointer_P.at(lambda).at(s) + (1 << (n - lambda + 1)),
+        copy(array_pointer_P.at(lambda).at(s), array_pointer_P.at(lambda).at(s) + (1 << (m - lambda + 1)),
              array_pointer_P.at(lambda).at(s_p));
-        copy(array_pointer_C.at(lambda).at(s), array_pointer_C.at(lambda).at(s) + (1 << (n - lambda + 1)),
+        copy(array_pointer_C.at(lambda).at(s), array_pointer_C.at(lambda).at(s) + (1 << (m - lambda + 1)),
              array_pointer_C.at(lambda).at(s_p));
 
         array_reference_count.at(lambda).at(s)--;
@@ -177,10 +189,10 @@ u8 *PolarCode::get_array_pointer_C(u16 lambda, u16 l) {
         inactive_array_indices.at(lambda).pop();
 
 
-        copy(array_pointer_P.at(lambda).at(s), array_pointer_P.at(lambda).at(s) + (1 << (n - lambda + 1)),
+        copy(array_pointer_P.at(lambda).at(s), array_pointer_P.at(lambda).at(s) + (1 << (m - lambda + 1)),
              array_pointer_P.at(lambda).at(s_p));
 
-        copy(array_pointer_C.at(lambda).at(s), array_pointer_C.at(lambda).at(s) + (1 << (n - lambda + 1)),
+        copy(array_pointer_C.at(lambda).at(s), array_pointer_C.at(lambda).at(s) + (1 << (m - lambda + 1)),
              array_pointer_C.at(lambda).at(s_p));
 
         array_reference_count.at(lambda).at(s)--;
@@ -207,7 +219,7 @@ void PolarCode::recursively_calc_P(u16 lambda, u16 phi) {
         double *p_lambda_1 = get_array_pointer_P(lambda - 1, l);
 
         u8 *c_lambda = get_array_pointer_C(lambda, l);
-        for (u16 beta = 0; beta < (1 << (n - lambda)); ++beta) {
+        for (u16 beta = 0; beta < (1 << (m - lambda)); ++beta) {
             if ((phi % 2) == 0) {
                 p_lambda[2 * beta] = 0.5f * (p_lambda_1[2 * (2 * beta)] * p_lambda_1[2 * (2 * beta + 1)]
                                              + p_lambda_1[2 * (2 * beta) + 1] * p_lambda_1[2 * (2 * beta + 1) + 1]);
@@ -229,7 +241,7 @@ void PolarCode::recursively_calc_P(u16 lambda, u16 phi) {
             continue;
         }
         double *p_lambda = get_array_pointer_P(lambda, l);
-        for (u16 beta = 0; beta < (1 << (n - lambda)); ++beta) {
+        for (u16 beta = 0; beta < (1 << (m - lambda)); ++beta) {
             p_lambda[2 * beta] = p_lambda[2 * beta] / sigma;
             p_lambda[2 * beta + 1] = p_lambda[2 * beta + 1] / sigma;
         }
@@ -245,7 +257,7 @@ void PolarCode::recursively_update_C(u16 lambda, u16 phi) {
         }
         u8 *c_lambda = get_array_pointer_C(lambda, l);
         u8 *c_lambda_1 = get_array_pointer_C(lambda - 1, l);
-        for (u16 beta = 0; beta < (1 << (n - lambda)); ++beta) {
+        for (u16 beta = 0; beta < (1 << (m - lambda)); ++beta) {
             c_lambda_1[2 * (2 * beta) + (psi % 2)] = (u8) ((c_lambda[2 * beta] + c_lambda[2 * beta + 1]) % 2);
             c_lambda_1[2 * (2 * beta + 1) + (psi % 2)] = c_lambda[2 * beta + 1];
         }
@@ -260,31 +272,21 @@ void PolarCode::continue_paths_frozen_bit(u16 phi) {
         if (active_path.at(l) == 0) {
             continue;
         }
-        u8 *c_m = get_array_pointer_C(n, l);
+//        cout << "\n l: " << l << " phi: " << phi << " arr_p: ";
+        u8 *c_m = get_array_pointer_C(m, l);
         if (is_subcode) {
             u8 value = 0;
-            // TODO: read article about SC List Decoding and try to figure out where changes are needed
-//            cout << '\n';
-//            cout << phi << ' ';
-//            cout << '\n';
             for (size_t s = 0; s < phi; ++s) {
-//                cout << (int) array_pointer_info.at(l)[s] << ' ';
-//                if (((int) array_pointer_info.at(l)[s]) != 0 && ((int) array_pointer_info.at(l)[s]) != 1) {
-//                    cout << (int) array_pointer_info.at(l)[s] << "Not one or zero!";
+//                if (T.find(phi) != T.end()) {
+////                    cout << (int) array_pointer_info.at(l)[s] << ' ';
+//                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T.at(phi)][s]) % 2;
 //                }
-//                if (frozen_bits_num_map[phi] != -1) {
-//                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[frozen_bits_num_order[phi]][s]) % 2;
-//                }
-//                for (int t_phi = 0; t_phi < J.size(); ++t_phi) {
-//                    if (phi == J.at(t_phi)) {
-//                        value = (value + array_pointer_info.at(l)[s] * constraint_matrix[t_phi][s]) % 2;
-//                    }
-//                }
-                if (T.find(phi) != T.end()) {
-                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T.at(phi)][s]) % 2;
+                if (T_arr.at(phi) != -1) {
+//                    cout << (int) array_pointer_info.at(l)[s] << ' ';
+                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T_arr.at(phi)][s]) % 2;
                 }
             }
-//            cout << '\n';
+//            cout << "value: " << (int) value << '\n';
             c_m[(phi % 2)] = value;
             array_pointer_info.at(l)[phi] = value;
         } else {
@@ -306,7 +308,7 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
             probForks.at(2 * l + 1) = -1;
         } else {
 
-            double *p_m = get_array_pointer_P(n, l);
+            double *p_m = get_array_pointer_P(m, l);
             probForks.at(2 * l) = p_m[0];
             probForks.at(2 * l + 1) = p_m[1];
 
@@ -365,13 +367,13 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
         if (contForks.at(2 * l) == 0 && contForks.at(2 * l + 1) == 0) {
             continue;
         }
-        u8 *c_m = get_array_pointer_C(n, l);
+        u8 *c_m = get_array_pointer_C(m, l);
 
         if (contForks.at(2 * l) == 1 && contForks.at(2 * l + 1) == 1) {
 
             c_m[(phi % 2)] = 0;
             u16 l_p = clone_path(l);
-            c_m = get_array_pointer_C(n, l_p);
+            c_m = get_array_pointer_C(m, l_p);
             c_m[(phi % 2)] = 1;
 
             copy(array_pointer_info.at(l), array_pointer_info.at(l) + phi, array_pointer_info.at(l_p));
@@ -412,8 +414,8 @@ u16 PolarCode::find_most_probable_path(bool check_crc) {
 
         path_with_crc_pass = true;
 
-        u8 *c_m = get_array_pointer_C(n, l);
-        double *p_m = get_array_pointer_P(n, l);
+        u8 *c_m = get_array_pointer_C(m, l);
+        double *p_m = get_array_pointer_P(m, l);
         if (p_p1 < p_m[c_m[1]]) {
             l_p = l;
             p_p1 = p_m[c_m[1]];

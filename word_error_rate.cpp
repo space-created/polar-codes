@@ -26,8 +26,8 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
             vector<double> bpsk(word_length);
             vector<double> received_signal(word_length, 0);
             vector<u8> info_bits = get_random_boolean_vector(info_length);
-//            vector<u8> info_bits = {1,0,1,1,0,1,0};
-//            vector<u8> info_bits = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0};
+//            vector<u8> info_bits = {1,1,1,1,1,1,0};
+//            vector<u8> info_bits = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
             vector<double> noise(word_length, 0);
 
@@ -40,7 +40,7 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
 //            for (int i = 0; i < info_bits.size(); ++i) {
 //                cout << (int) info_bits.at(i) << ' ';
 //            }
-//            cout << '\n';
+//            cout << '\m';
             for (u16 i = 0; i < word_length; ++i) {
                 bpsk.at(i) = 2.0f * ((double) coded_bits.at(i)) - 1.0f;
             }
@@ -77,7 +77,7 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
 //                }
 //                cout << '\n';
 //            } catch (...) {
-//                cout << "Decode " << '\n';
+//                cout << "Decode " << '\m';
 //            }
             num_run++;
 
@@ -88,7 +88,7 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
                 }
             }
 //            } catch (...) {
-//                cout << "Encode " << '\n';
+//                cout << "Encode " << '\m';
 //            }
         }
         word_error.at(ebno_i) = (double) num_err / num_run;
