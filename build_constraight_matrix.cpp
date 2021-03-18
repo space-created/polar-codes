@@ -1,6 +1,6 @@
 #include "GaloisFieldPolynomial.h"
 #include "PolarCode.h"
-// TODO: figure out why there are 119 rows instead of 131 in the V matrix?
+
 void PolarCode::build_constraint_matrix() {
     vector<vector<u8> > check_matrix = build_bch_check_matrix();
     vector<vector<u8> > f_matrix = kronecker_product();
@@ -16,14 +16,14 @@ void PolarCode::build_constraint_matrix() {
     matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
     apply_dzs_type_b();
-    cout << '\n' << constraint_matrix.size() << ' ' << constraint_matrix[0].size() << '\n';
-
-    for (auto & i : constraint_matrix) {
-        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
-            cout << (int) i.at(j) << ' ';
-        }
-        cout << endl;
-    }
+//    cout << '\n' << constraint_matrix.size() << ' ' << constraint_matrix[0].size() << '\n';
+//
+//    for (auto & i : constraint_matrix) {
+//        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
+//            cout << (int) i.at(j) << ' ';
+//        }
+//        cout << endl;
+//    }
 
     // frozen_bits - vector with frozen positions - 1 and unfrozen (info) - 0
     // frozen_bits_num_map - vector with -1 if it is non dynamic frozen bit and the number
@@ -44,34 +44,8 @@ void PolarCode::build_constraint_matrix() {
 
         int one_pos = find_the_most_right_one_pos(constraint_matrix.at(i));
         J.at(i) = one_pos;
-        T.insert({one_pos, i});
         T_arr.at(one_pos) = i;
     }
-
-
-    cout << '\n'<< "J: ";
-    for (int i = 0; i < J.size(); ++i) {
-        cout << (int) J.at(i) << ' ';
-    }
-    cout << '\n';
-    cout << '\n' << "frozen_bits_num_map: ";
-    for (int i = 0; i < frozen_bits_num_map.size(); ++i) {
-        cout << (int) frozen_bits_num_map.at(i) << ' ';
-    }
-
-
-//    cout << '\m'<< "frozen_bits_pos: ";
-//    for (int i = frozen_bits.size() - 1; i >= 0; i--) {
-//        if (frozen_bits[i] == 1) {
-//            cout << (int) i << ' ';
-//        }
-//    }
-    cout << '\n';
-    cout << '\n' << "frozen_bits_num_order: ";
-    for (int i = 0; i < frozen_bits_num_order.size(); ++i) {
-        cout << (int) frozen_bits_num_order.at(i) << ' ';
-    }
-    cout << '\n';
 }
 
 void PolarCode::apply_dzs_type_b() {
@@ -104,16 +78,6 @@ vector<vector<u8> > PolarCode::build_bch_check_matrix() {
         }
     }
     check_matrix.at(m - 1).at(0) = 1;
-
-//    for (size_t i = 0; i < check_matrix.size(); ++i) {
-//        for (size_t j = 0; j < check_matrix.at(0).size(); ++j) {
-//            cout << (int) check_matrix.at(i).at(j) << ' ';
-//        }
-//        if (!((i + 1) % 6)) {
-//            cout << "\m\m";
-//        }
-//        cout << endl;
-//    }
     return check_matrix;
 }
 
@@ -187,30 +151,6 @@ void PolarCode::remove_zero_rows(std::vector<std::vector<u8> > &matrix) {
             constraint_matrix.push_back(matrix[i]);
         }
     }
-
-//    for (size_t i = 0; i < constraint_matrix.size(); ++i) {
-//        int pos = -1;
-//        for (size_t j = 0; j < constraint_matrix[i].size(); ++j) {
-//            if (pos == -1) {
-//                if (constraint_matrix[i][j] == 1) {
-//                    pos = j;
-//                }
-//            } else {
-//                if (constraint_matrix[i][j] == 1) {
-//                    pos = -1;
-//                    break;
-//                }
-//            }
-//        }
-//        if (pos != -1) {
-//            for (size_t j = 0; j < constraint_matrix.size(); ++j) {
-//                if (j != i && constraint_matrix[j][pos] == 1) {
-//                    constraint_matrix[j][pos] = 0;
-//                }
-//            }
-//        }
-//    }
-
 }
 
 

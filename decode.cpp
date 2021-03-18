@@ -272,21 +272,14 @@ void PolarCode::continue_paths_frozen_bit(u16 phi) {
         if (active_path.at(l) == 0) {
             continue;
         }
-//        cout << "\n l: " << l << " phi: " << phi << " arr_p: ";
         u8 *c_m = get_array_pointer_C(m, l);
         if (is_subcode) {
             u8 value = 0;
             for (size_t s = 0; s < phi; ++s) {
-//                if (T.find(phi) != T.end()) {
-////                    cout << (int) array_pointer_info.at(l)[s] << ' ';
-//                    value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T.at(phi)][s]) % 2;
-//                }
                 if (T_arr.at(phi) != -1) {
-//                    cout << (int) array_pointer_info.at(l)[s] << ' ';
                     value = (value + array_pointer_info.at(l)[s] * constraint_matrix[T_arr.at(phi)][s]) % 2;
                 }
             }
-//            cout << "value: " << (int) value << '\n';
             c_m[(phi % 2)] = value;
             array_pointer_info.at(l)[phi] = value;
         } else {

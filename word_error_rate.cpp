@@ -21,13 +21,10 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
         size_t num_err = 0;
         size_t num_run = 0;
         while (num_err < min_error_amount && num_run < max_amount_runs) {
-//            try {
             vector<u8> coded_bits;
             vector<double> bpsk(word_length);
             vector<double> received_signal(word_length, 0);
             vector<u8> info_bits = get_random_boolean_vector(info_length);
-//            vector<u8> info_bits = {1,1,1,1,1,1,0};
-//            vector<u8> info_bits = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1};
 
             vector<double> noise(word_length, 0);
 
@@ -36,11 +33,6 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
             }
 
             coded_bits = encode(info_bits);
-//            cout << '\n' << "Encoded vector: ";
-//            for (int i = 0; i < info_bits.size(); ++i) {
-//                cout << (int) info_bits.at(i) << ' ';
-//            }
-//            cout << '\m';
             for (u16 i = 0; i < word_length; ++i) {
                 bpsk.at(i) = 2.0f * ((double) coded_bits.at(i)) - 1.0f;
             }
@@ -69,16 +61,8 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
 
             }
 
-//            try {
-                vector<u8> decoded_info_bits = decode(p1, p0, l_size);
-//                cout << '\n' << "Decoded vector: ";
-//                for (int i = 0; i < decoded_info_bits.size(); ++i) {
-//                    cout << (int) decoded_info_bits.at(i) << ' ';
-//                }
-//                cout << '\n';
-//            } catch (...) {
-//                cout << "Decode " << '\m';
-//            }
+
+            vector<u8> decoded_info_bits = decode(p1, p0, l_size);
             num_run++;
 
             for (u16 i = 0; i < info_length; ++i) {
@@ -87,9 +71,6 @@ vector<double> PolarCode::get_word_error_rate(vector<double> ebno_vec, u8 l_size
                     break;
                 }
             }
-//            } catch (...) {
-//                cout << "Encode " << '\m';
-//            }
         }
         word_error.at(ebno_i) = (double) num_err / num_run;
     }

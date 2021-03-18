@@ -24,22 +24,13 @@ vector<u8> PolarCode::encode(vector<u8> info_bits) {
     }
 
 
-//    cout << '\n' << "info_bits_padded_1: ";
-//    for (int i = 0; i < info_bits_padded.size(); ++i) {
-//        cout << (int) info_bits_padded.at(i) << ' ';
-//    }
-//    cout << '\n';
 
     if (is_subcode) {
         for (int i = J.size() - 1; i >= 0; --i) {
             int right_one_pos = J.at(i);
             int row_num = i;
-//            cout << "\nu[" + to_string(J.at(i)) + "] = 0";
             for (int s = 0; s < right_one_pos; ++s) {
-//                if (constraint_matrix.at(row_num).at(s) != 0) {
-//
-//                    cout << " + u[" + to_string(s) + "]";
-//                }
+
 
                 info_bits_padded.at(right_one_pos) =
                         (info_bits_padded.at(right_one_pos) +
@@ -49,11 +40,7 @@ vector<u8> PolarCode::encode(vector<u8> info_bits) {
         }
     }
 
-//    cout << '\n' << "info_bits_padded_2: ";
-//    for (int i = 0; i < info_bits_padded.size(); ++i) {
-//        cout << (int) info_bits_padded.at(i) << ' ';
-//    }
-//    cout << '\n';
+
 
     for (size_t i = info_length; i < info_length + crc_size; ++i) {
         u8 crc_bit = 0;

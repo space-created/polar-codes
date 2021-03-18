@@ -17,12 +17,12 @@ void PolarCode::initialize_frozen_bits() {
             }
         }
     }
-    cout << '\n';
-    for (int i = 0; i < channel_vec.size(); ++i) {
-        cout << channel_vec.at(i) << ' ';
-    }
-    cout << '\n';
-    cout << '\n';
+//    cout << '\n';
+//    for (int i = 0; i < channel_vec.size(); ++i) {
+//        cout << channel_vec.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n';
 
     channel_order_descending.resize(word_length);
     size_t n_t(0);
@@ -31,15 +31,14 @@ void PolarCode::initialize_frozen_bits() {
     sort(begin(channel_order_descending),
          end(channel_order_descending),
          [&](int i1, int i2) {
-//             return channel_bit_reverse_vec.at(i1) < channel_bit_reverse_vec.at(i2);
              return channel_vec.at(bit_rev_matrix_order.at(i1)) < channel_vec.at(bit_rev_matrix_order.at(i2));
          });
     u16 effective_info_length = info_length;
-    cout << "channel_order_descending: ";
-    for (int i = 0; i < channel_order_descending.size(); i++) {
-        cout << channel_order_descending.at(i) << ' ';
-    }
-    cout << '\n';
+//    cout << "channel_order_descending: ";
+//    for (int i = 0; i < channel_order_descending.size(); i++) {
+//        cout << channel_order_descending.at(i) << ' ';
+//    }
+//    cout << '\n';
     if (is_subcode) {
         for (int i = 0; i < J.size(); ++i) {
             frozen_bits.at(J.at(i)) = 1;
@@ -61,11 +60,11 @@ void PolarCode::initialize_frozen_bits() {
             frozen_bits.at(channel_order_descending.at(i)) = 1;
         }
     }
-    cout << '\n'<< "frozen_bits: ";
-    for (int i = 0; i < frozen_bits.size(); ++i) {
-        cout << (int) frozen_bits.at(i) << ' ';
-    }
-    cout << '\n';
+//    cout << '\n'<< "frozen_bits: ";
+//    for (int i = 0; i < frozen_bits.size(); ++i) {
+//        cout << (int) frozen_bits.at(i) << ' ';
+//    }
+//    cout << '\n';
     crc_matrix.resize(crc_size);
     for (u8 bit = 0; bit < crc_size; ++bit) {
         crc_matrix.at(bit).resize(info_length);
