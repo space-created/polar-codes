@@ -81,8 +81,6 @@ private:
     bool is_subcode;
     vector<u8> poly;
     u16 bch_distance;
-    vector<int> frozen_bits_num_map;
-    vector<int> frozen_bits_num_order;
     vector<int> T_arr;
     vector<int> J;
     std::vector<std::vector<u8> > constraint_matrix;

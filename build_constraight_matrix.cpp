@@ -26,20 +26,12 @@ void PolarCode::build_constraint_matrix() {
 //    }
 
     // frozen_bits - vector with frozen positions - 1 and unfrozen (info) - 0
-    // frozen_bits_num_map - vector with -1 if it is non dynamic frozen bit and the number
-    // of the V matrix row on the most right 1 position in this V matrix row
-    frozen_bits_num_map.resize(frozen_bits.size(), -1);
-    // frozen_bits_num_order - isn't needed for now
-    frozen_bits_num_order.resize(frozen_bits.size(), -1);
 
     // J - is the most right 1 position in V from 0 row to V.size() - 1: e.g. 0 - 960, 1 - 928
     J.resize(constraint_matrix.size(), -1);
     // T - is the map which maps the position of the most right 1 to row number of V: e.g. 960 -> 0
     T_arr.resize(constraint_matrix[0].size(), -1);
-    for (size_t i = 0; i < constraint_matrix.size(); ++i) {
 
-        frozen_bits_num_map.at(find_the_most_right_one_pos(constraint_matrix.at(i))) = i;
-    }
     for (size_t i = 0; i < J.size(); ++i) {
 
         int one_pos = find_the_most_right_one_pos(constraint_matrix.at(i));

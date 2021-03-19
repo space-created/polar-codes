@@ -45,8 +45,8 @@ int main(int argc, char *argv[]) {
 
     PolarCode polar_code(n, info_length, epsilon, crc_size, is_subcode, poly, bch_code_distance);
 
-    double ebno_log_min = 1.00;
-    double ebno_log_max = 3.00;
+    double ebno_log_min = 2.50;
+    double ebno_log_max = 2.51;
 //    double ebno_log_max = 1.01;
     double ebno_log_increment = 0.25;
     vector<double> ebno_vec;
@@ -56,12 +56,12 @@ int main(int argc, char *argv[]) {
     }
 
     vector<u8> list_size_arr = {
-            1,
-            2,
-            4,
-            8,
+//            1,
+//            2,
+//            4,
+//            8,
             16,
-            32
+//            32
     };
 
     auto start = high_resolution_clock::now();
@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
         u8 list_size = list_size_arr[i];
         const size_t min_error_amount = 100;
         const size_t max_runs_amount = 100000;
+//        const size_t max_runs_amount = 10000;
 
 
         word_error_rate[i] = polar_code.get_word_error_rate(ebno_vec, list_size, min_error_amount,
