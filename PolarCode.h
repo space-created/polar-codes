@@ -27,24 +27,27 @@ public:
               u16 crc_size,
               bool is_subcode,
               vector<u8> poly,
-              u16 bch_distance)
+              u16 bch_distance,
+              int q)
               : m(num_layers),
                 info_length(info_length),
                 epsilon(epsilon),
                 crc_size(crc_size),
                 is_subcode(is_subcode),
                 poly(std::move(poly)),
-                bch_distance(bch_distance) {
+                bch_distance(bch_distance),
+                q(q) {
 
         word_length = (u16) (1 << m);
         frozen_bits.resize(word_length, 0);
         bit_rev_matrix_order.resize(word_length);
         get_bit_rev_order();
+        initialize_channel_order();
         if (is_subcode) {
             build_constraint_matrix();
+        } else {
+            initialize_frozen_bits();
         }
-        initialize_frozen_bits();
-
 
         list_size = 1; // default
         decoded_info_bits.resize(info_length);
@@ -68,24 +71,26 @@ private:
 
     vector<int> frozen_bits;
     vector<u16> channel_order_descending;
+    vector<int> static_frozen_channels;
     vector<vector<u8>> crc_matrix;
     vector<u16> bit_rev_matrix_order;
 
+    void initialize_channel_order();
     void initialize_frozen_bits();
-
     void get_bit_rev_order();
 
     u16 list_size;
 
     // subcode:
     bool is_subcode;
+    int q;
     vector<u8> poly;
     u16 bch_distance;
     vector<int> T_arr;
     vector<int> J;
-    std::vector<std::vector<u8> > constraint_matrix;
+    vector<vector<u8> > constraint_matrix;
     void build_constraint_matrix();
-    void apply_dzs_type_b();
+    void insert_least_reliable_rows_for_freezing_bits();
     vector<vector<u8> > build_bch_check_matrix();
     vector<vector<u8> > kronecker_product();
     vector<vector<u8> > get_a_matrix(vector<vector<u8> >& f_matrix);

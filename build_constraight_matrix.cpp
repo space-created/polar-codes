@@ -15,7 +15,14 @@ void PolarCode::build_constraint_matrix() {
     sort_by_right_one(h_a_t_product);
     matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
-    apply_dzs_type_b();
+    J.resize(constraint_matrix.size(), -1);
+    for (size_t i = 0; i < J.size(); ++i) {
+        J.at(i) = find_the_most_right_one_pos(constraint_matrix.at(i));
+    }
+    initialize_frozen_bits();
+
+    insert_least_reliable_rows_for_freezing_bits();
+
 //    cout << '\n' << constraint_matrix.size() << ' ' << constraint_matrix[0].size() << '\n';
 //
 //    for (auto & i : constraint_matrix) {
@@ -40,10 +47,22 @@ void PolarCode::build_constraint_matrix() {
     }
 }
 
-void PolarCode::apply_dzs_type_b() {
-
+void PolarCode::insert_least_reliable_rows_for_freezing_bits() {
+    int amount_to_freeze = static_frozen_channels.size();
+    for (int i = 0; i < static_frozen_channels.size(); ++i) {
+        vector<u8> V_row_to_insert(constraint_matrix.at(0).size(), 0);
+        V_row_to_insert.at(static_frozen_channels.at(i)) = 1;
+        if (amount_to_freeze <= q) {
+            for (int j = 0; j < static_frozen_channels.at(i); ++j) {
+                if (frozen_bits.at(j) == 0) {
+                    V_row_to_insert.at(j) = rand() % 2;
+                }
+            }
+        }
+        constraint_matrix.push_back(V_row_to_insert);
+        amount_to_freeze--;
+    }
 }
-
 
 vector<vector<u8> > PolarCode::build_bch_check_matrix() {
     vector<vector<u8> > h(bch_distance - 1, vector<u8>(word_length));

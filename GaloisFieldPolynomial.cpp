@@ -25,7 +25,6 @@ GaloisFieldPolynomial GaloisFieldPolynomial::multiply(GaloisFieldPolynomial &a, 
 
     for (int i = 0; i < a_size; i++) {
         for (int j = 0; j < b_size; j++) {
-            // ???
             prod_poly.at(i + j) ^= a.get_poly(i) * b.get_poly(j);
         }
     }

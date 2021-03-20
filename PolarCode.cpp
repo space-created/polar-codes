@@ -1,6 +1,6 @@
 #include "PolarCode.h"
 
-void PolarCode::initialize_frozen_bits() {
+void PolarCode::initialize_channel_order() {
     vector<double> channel_vec(word_length);
 
     for (u16 i = 0; i < word_length; ++i) {
@@ -33,12 +33,15 @@ void PolarCode::initialize_frozen_bits() {
          [&](int i1, int i2) {
              return channel_vec.at(bit_rev_matrix_order.at(i1)) < channel_vec.at(bit_rev_matrix_order.at(i2));
          });
+//        cout << "channel_order_descending: ";
+//        for (int i = 0; i < channel_order_descending.size(); i++) {
+//            cout << channel_order_descending.at(i) << ' ';
+//        }
+//        cout << '\n';
+}
+
+void PolarCode::initialize_frozen_bits() {
     u16 effective_info_length = info_length;
-//    cout << "channel_order_descending: ";
-//    for (int i = 0; i < channel_order_descending.size(); i++) {
-//        cout << channel_order_descending.at(i) << ' ';
-//    }
-//    cout << '\n';
     if (is_subcode) {
         for (int i = 0; i < J.size(); ++i) {
             frozen_bits.at(J.at(i)) = 1;
@@ -48,6 +51,7 @@ void PolarCode::initialize_frozen_bits() {
         while (amount_to_freeze > 0) {
             if (frozen_bits.at(channel_order_descending.at(pos)) != 1) {
                 frozen_bits.at(channel_order_descending.at(pos)) = 1;
+                static_frozen_channels.push_back(channel_order_descending.at(pos));
                 amount_to_freeze--;
             }
             pos--;
