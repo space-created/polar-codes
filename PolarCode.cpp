@@ -1,23 +1,45 @@
 #include "PolarCode.h"
 
 void PolarCode::initialize_channel_order() {
-    vector<double> channel_vec(word_length);
-
-    for (u16 i = 0; i < word_length; ++i) {
-        channel_vec.at(i) = epsilon;
-    }
-    for (u8 it = 0; it < m; ++it) {
-        u16 increment = 1 << it;
-        for (u16 j = 0; j < increment; j += 1) {
-            for (u16 i = 0; i < word_length; i += 2 * increment) {
-                double z1 = channel_vec.at(i + j);
-                double z2 = channel_vec.at(i + j + increment);
-                channel_vec.at(i + j) = z1 + z2 - z1 * z2;
-                channel_vec.at(i + j + increment) = z1 * z2;
+    vector<double> channel_vec;
+    if (is_BEC) {
+        channel_vec.resize(word_length);
+        for (u16 i = 0; i < word_length; ++i) {
+            channel_vec.at(i) = epsilon;
+        }
+        for (u8 it = 0; it < m; ++it) {
+            u16 increment = 1 << it;
+            for (u16 j = 0; j < increment; j += 1) {
+                for (u16 i = 0; i < word_length; i += 2 * increment) {
+                    double z1 = channel_vec.at(i + j);
+                    double z2 = channel_vec.at(i + j + increment);
+                    channel_vec.at(i + j) = z1 + z2 - z1 * z2;
+                    channel_vec.at(i + j + increment) = z1 * z2;
+                }
             }
         }
+    } else {
+        channel_vec.resize(1, 2 / sigma_sqr);
+        for (int it = 0; it < m; ++it) {
+            vector<double> temp = channel_vec;
+            channel_vec.resize(2 * temp.size(), 0);
+            for (int i = 0; i < temp.size(); ++i) {
+                if (temp.at(i) > 12) {
+                    channel_vec.at(2 * i) = 0.9861 * temp.at(i) - 2.3152;
+                } else if (temp.at(i) > 3.5 && temp.at(i) <= 12) {
+                    channel_vec.at(2 * i) = temp.at(i) * (9.005 * 0.001 * temp.at(i) + 0.7694) - 0.9507;
+                } else if (temp.at(i) > 1 && temp.at(i) <= 3.5) {
+                    channel_vec.at(2 * i) = temp.at(i) * (0.062883 * temp.at(i) + 0.3678) - 0.1627;
+                } else {
+                    channel_vec.at(2 * i) = temp.at(i) * (0.2202 * temp.at(i) + 0.06448);
+                }
+
+                channel_vec.at(2 * i + 1) = temp.at(i) + temp.at(i);
+            }
+        }
+        reverse(channel_vec.begin(), channel_vec.end());
     }
-//    cout << '\n';
+//    cout << '\n' << channel_vec.size() << '\n';
 //    for (int i = 0; i < channel_vec.size(); ++i) {
 //        cout << channel_vec.at(i) << ' ';
 //    }
@@ -31,13 +53,17 @@ void PolarCode::initialize_channel_order() {
     sort(begin(channel_order_descending),
          end(channel_order_descending),
          [&](int i1, int i2) {
-             return channel_vec.at(bit_rev_matrix_order.at(i1)) < channel_vec.at(bit_rev_matrix_order.at(i2));
+             if (is_BEC) {
+                 return channel_vec.at(bit_rev_matrix_order.at(i1)) < channel_vec.at(bit_rev_matrix_order.at(i2));
+             } else {
+                 return channel_vec.at(i1) < channel_vec.at(i2);
+             }
          });
-//        cout << "channel_order_descending: ";
-//        for (int i = 0; i < channel_order_descending.size(); i++) {
-//            cout << channel_order_descending.at(i) << ' ';
-//        }
-//        cout << '\n';
+//    cout << "channel_order_descending: ";
+//    for (int i = 0; i < channel_order_descending.size(); i++) {
+//        cout << channel_order_descending.at(i) << ' ';
+//    }
+//    cout << '\n';
 }
 
 void PolarCode::initialize_frozen_bits() {

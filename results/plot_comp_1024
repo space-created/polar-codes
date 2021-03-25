@@ -1,0 +1,20 @@
+set terminal pngcairo dashed size 1000,800
+set output 'scl1024size.png'
+set title "WER x SNR (SCL 1024 size for AWGN channel)"
+set key left bottom
+set xlabel "Signal-to-noise ratio [dB]"
+set ylabel "Word error rate"
+set logscale y 10
+set yrange [1e-6:1]
+set xrange [0.5:2.5]
+set xtics 0.25
+set format y "10^{%L}"
+set grid mytics lt 1 lw 1 layerdefault back
+set grid xtics lt 0 lw 1 layerdefault back
+plot \
+'graph1024.txt' u 1:3 dt 1 lt 7 lw 3 pt 5 ps 1 with linespoints title 'Arikan Polar (1024,512,16), L=32',\
+'graph1024.txt' u 1:4 dt (10,10) lt 6 lw 2 pt 2 ps 1.2 with linespoints title 'Polar Subcode (1024,512,28), L=16', \
+'graph1024.txt' u 1:5 dt 1 lt 6 lw 3 pt 2 ps 1.2 with linespoints title 'Polar Subcode (1024,512,28), L=32', \
+'graph1024.txt' u 1:6 dt (10,10) lt 1 lw 3 pt 2 with linespoints title 'Polar Subcode (1024,512,28), q=64 L=16', \
+'graph1024.txt' u 1:7 dt 1 lt 1 lw 3 pt 3 with linespoints title 'Polar Subcode (1024,512,28), q=64 L=32'
+pause -1 "Hit any key to continue"

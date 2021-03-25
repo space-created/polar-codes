@@ -290,10 +290,9 @@ void PolarCode::continue_paths_frozen_bit(u16 phi) {
 }
 
 void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
-    probForks.resize((unsigned long) (2 * list_size));
-    contForks.resize((unsigned long) (2 * list_size));
-    probabilities.clear();
-
+    vector<double> probForks((unsigned long) (2 * list_size));
+    vector<double> probabilities;
+    vector<uint8_t> contForks((unsigned long) (2 * list_size));
     u16 i = 0;
     for (unsigned l = 0; l < list_size; ++l) {
         if (active_path.at(l) == 0) {
@@ -317,7 +316,7 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
     if ((2 * i) < list_size) {
         rho = (u16) 2 * i;
     }
-    for (u8 l = 0; l < 2 * list_size; ++l) {
+    for (u16 l = 0; l < 2 * list_size; ++l) {
         contForks.at(l) = 0;
     }
     sort(probabilities.begin(), probabilities.end(), greater<double>());
@@ -325,7 +324,7 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
     double threshold = probabilities.at((unsigned long) (rho - 1));
     u16 num_paths_continued = 0;
 
-    for (u8 l = 0; l < 2 * list_size; ++l) {
+    for (u16 l = 0; l < 2 * list_size; ++l) {
         if (probForks.at(l) > threshold) {
             contForks.at(l) = 1;
             num_paths_continued++;
@@ -336,7 +335,7 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
     }
 
     if (num_paths_continued < rho) {
-        for (u8 l = 0; l < 2 * list_size; ++l) {
+        for (u16 l = 0; l < 2 * list_size; ++l) {
             if (probForks.at(l) == threshold) {
                 contForks.at(l) = 1;
                 num_paths_continued++;
@@ -387,7 +386,6 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
             }
         }
     }
-
 }
 
 u16 PolarCode::find_most_probable_path(bool check_crc) {

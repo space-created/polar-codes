@@ -51,9 +51,9 @@ vector<u8> PolarCode::encode(vector<u8> info_bits) {
     }
 
     for (size_t iteration = 0; iteration < m; ++iteration) {
-        auto increment = (u16) (1 << iteration);
-        for (size_t j = 0; j < increment; j += 1) {
-            for (size_t i = 0; i < word_length; i += 2 * increment) {
+        u16 increment = (u16) (1 << iteration);
+        for (u16 j = 0; j < increment; j += 1) {
+            for (u16 i = 0; i < word_length; i += 2 * increment) {
                 info_bits_padded.at(i + j) = (u8) (
                         (info_bits_padded.at(i + j) + info_bits_padded.at(i + j + increment)) % 2);
             }

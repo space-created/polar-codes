@@ -1,7 +1,7 @@
 # windows setup
 CXX = g++
 CXXFLAGS = -g -Wall
-EXEC = simulate1
+EXEC = simulate7
 OBJDIR=dist
 OBJS = $(addprefix $(OBJDIR)/, \
 	main.o decode.o encode.o PolarCode.o util.o word_error_rate.o build_constraight_matrix.o GaloisFieldPolynomial.o)
