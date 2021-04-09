@@ -65,7 +65,7 @@ void PolarCode::insert_least_reliable_rows_for_freezing_bits() {
 }
 
 vector<vector<u8> > PolarCode::build_bch_check_matrix() {
-    vector<vector<u8> > h(bch_distance - 1, vector<u8>(word_length));
+    vector<vector<u16> > h(bch_distance - 1, vector<u16>(word_length));
     u16 b = 0;
     for (size_t i = 0; i < bch_distance - 1; ++i) {
         h.at(i).at(0) = 0;

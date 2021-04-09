@@ -23,7 +23,7 @@ public:
         fill_polynomial();
     }
 
-    explicit GaloisFieldPolynomial(vector<u8> poly, size_t poly_size) {
+    explicit GaloisFieldPolynomial(vector<u16> poly, size_t poly_size) {
         this->len = poly_size;
         this->poly = std::move(poly);
         this->representation = find_representation();
@@ -45,12 +45,12 @@ public:
         return len;
     }
 
-    u8 get_poly(size_t i) {
+    u16 get_poly(size_t i) {
         return poly.at(i);
     }
 
 private:
-    vector<u8> poly;
+    vector<u16> poly;
     size_t representation;
     size_t len;
 

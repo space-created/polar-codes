@@ -27,7 +27,7 @@ public:
               double epsilon,
               u16 crc_size,
               bool is_subcode,
-              vector<u8> poly,
+              vector<u16> poly,
               u16 bch_distance,
               int q,
               double sigma_sqr)
@@ -93,7 +93,7 @@ private:
     // subcode:
     bool is_subcode;
     int q;
-    vector<u8> poly;
+    vector<u16> poly;
     u16 bch_distance;
     vector<int> T_arr;
     vector<int> J;

@@ -4,7 +4,7 @@
 
 
 GaloisFieldPolynomial GaloisFieldPolynomial::power_by_modulo(size_t deg, GaloisFieldPolynomial &power_poly, GaloisFieldPolynomial &mod_poly) {
-    vector<u8> power_poly_by_modulo(power_poly.get_size(), 0);
+    vector<u16> power_poly_by_modulo(power_poly.get_size(), 0);
     if (deg == 0) {
         return GaloisFieldPolynomial(1, power_poly.get_size());
     }
@@ -21,7 +21,7 @@ GaloisFieldPolynomial GaloisFieldPolynomial::multiply(GaloisFieldPolynomial &a, 
     size_t b_size = b.get_size();
     size_t prod_size = a_size + b_size - 1;
 
-    vector<u8> prod_poly(prod_size, 0);
+    vector<u16> prod_poly(prod_size, 0);
 
     for (int i = 0; i < a_size; i++) {
         for (int j = 0; j < b_size; j++) {
@@ -44,8 +44,8 @@ GaloisFieldPolynomial::get_remainder_by_modulo(GaloisFieldPolynomial &a, GaloisF
         return a;
     }
 
-    vector<u8> a_poly(non_zero_pos_a + 1);
-    vector<u8> m_poly(non_zero_pos_mod_poly + 1);
+    vector<u16> a_poly(non_zero_pos_a + 1);
+    vector<u16> m_poly(non_zero_pos_mod_poly + 1);
     for (size_t i = 0; i < a_poly.size(); ++i) {
         a_poly.at(i) = a.get_poly(a.get_size() - 1 - non_zero_pos_a + i);
     }
@@ -70,7 +70,7 @@ GaloisFieldPolynomial::get_remainder_by_modulo(GaloisFieldPolynomial &a, GaloisF
         shift = new_shift;
     }
 
-    vector<u8> remainder_poly(m_poly.size() - 1);
+    vector<u16> remainder_poly(m_poly.size() - 1);
     for (size_t i = 0; i < remainder_poly.size(); ++i) {
         remainder_poly.at(remainder_poly.size() - i - 1) = a_poly.at(a_poly.size() - i - 1);
     }
