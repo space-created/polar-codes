@@ -52,18 +52,17 @@ public:
         } else {
             initialize_frozen_bits();
         }
-
-        list_size = 1; // default
+        // default
+        list_size = 1;
         decoded_info_bits.resize(info_length);
     }
 
     vector<u8> encode(vector<u8> info_bits);
 
-    vector<u8> decode(vector<double> &p1, vector<double> &p0, u16 ls);
+    vector<u8> decode(vector<double> &p1, vector<double> &p0);
 
-    vector<vector<double> >
-    get_word_error_rate(const vector<double>& ebno_vec, vector<int> list_size_arr, size_t min_error_amount,
-                        size_t max_amount_runs, double sqr_sigma);
+    double get_word_error_rate(double noiseStdDev, int list_size, size_t min_error_amount,
+                        size_t max_amount_runs);
 
 private:
 

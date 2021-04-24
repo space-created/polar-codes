@@ -3,7 +3,7 @@
 vector<u8> PolarCode::encode(vector<u8> info_bits) {
 
     vector<u8> info_bits_padded(word_length, 0);
-    vector<u8> coded_bits(word_length);
+    vector<u8> coded_bits(word_length, 0);
 
     // place info bits in positions of the most strong channels
     if (is_subcode) {
@@ -23,24 +23,17 @@ vector<u8> PolarCode::encode(vector<u8> info_bits) {
         }
     }
 
-
-
     if (is_subcode) {
         for (int i = J.size() - 1; i >= 0; --i) {
             int right_one_pos = J.at(i);
             int row_num = i;
             for (int s = 0; s < right_one_pos; ++s) {
-
-
                 info_bits_padded.at(right_one_pos) =
                         (info_bits_padded.at(right_one_pos) +
                          info_bits_padded.at(s) * constraint_matrix.at(row_num).at(s)) % 2;
             }
-
         }
     }
-
-
 
     for (size_t i = info_length; i < info_length + crc_size; ++i) {
         u8 crc_bit = 0;

@@ -1,0 +1,26 @@
+Modulation channel: AWGN
+Polar subcode (1024, 512), q = 104
+Distance: 28
+SNR 		NoiseStdDev 		32         		
+1.50		0.84139514165		0.0105494046		
+1.75		0.81752303794		0.0019000000		
+Modulation channel: AWGN
+Polar subcode (1024, 512), q = 112
+Distance: 28
+SNR 		NoiseStdDev 		32         		
+1.50		0.84139514165		0.0094000000		
+1.75		0.81752303794		0.0021000000		
+Modulation channel: AWGN
+Polar subcode (1024, 512), q = 120
+Distance: 28
+SNR 		NoiseStdDev 		32         		
+1.50		0.84139514165		0.0091000000		
+1.75		0.81752303794		0.0012000000		
+Modulation channel: AWGN
+Polar subcode (1024, 512), q = 128
+Distance: 28
+SNR 		NoiseStdDev 		32         		
+1.50		0.84139514165		0.0100000000		
+1.75		0.81752303794		0.0019000000		
+
+Time: 14521

@@ -1,8 +1,6 @@
 #include "PolarCode.h"
 
-vector<u8> PolarCode::decode(vector<double> &p1, vector<double> &p0, u16 ls) {
-
-    list_size = ls;
+vector<u8> PolarCode::decode(vector<double> &p1, vector<double> &p0) {
 
     initialize_data_structures();
 

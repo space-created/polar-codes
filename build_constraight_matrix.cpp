@@ -15,36 +15,46 @@ void PolarCode::build_constraint_matrix() {
     sort_by_right_one(h_a_t_product);
     matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
+
+//    constraint_matrix.resize(512, vector<u8>(2048, 0));
+//    for (int i = 0; i < constraint_matrix.size(); ++i) {
+//        for (int j = 0; j < constraint_matrix.at(i).size(); ++j) {
+//            int a;
+//            cin >> a;
+//            constraint_matrix[i][j] = (u8) a;
+//        }
+//    }
+
+    sort_by_right_one(constraint_matrix);
+
     J.resize(constraint_matrix.size(), -1);
     for (size_t i = 0; i < J.size(); ++i) {
         J.at(i) = find_the_most_right_one_pos(constraint_matrix.at(i));
     }
     initialize_frozen_bits();
-
     insert_least_reliable_rows_for_freezing_bits();
+    sort_by_right_one(constraint_matrix);
 
-//    cout << '\n' << constraint_matrix.size() << ' ' << constraint_matrix[0].size() << '\n';
-//
-//    for (auto & i : constraint_matrix) {
+//        for (auto & i : constraint_matrix) {
 //        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
 //            cout << (int) i.at(j) << ' ';
 //        }
 //        cout << endl;
 //    }
 
-    // frozen_bits - vector with frozen positions - 1 and unfrozen (info) - 0
 
-    // J - is the most right 1 position in V from 0 row to V.size() - 1: e.g. 0 - 960, 1 - 928
     J.resize(constraint_matrix.size(), -1);
     // T - is the map which maps the position of the most right 1 to row number of V: e.g. 960 -> 0
     T_arr.resize(constraint_matrix[0].size(), -1);
-
+//    cout << "\nJ: ";
     for (size_t i = 0; i < J.size(); ++i) {
 
         int one_pos = find_the_most_right_one_pos(constraint_matrix.at(i));
         J.at(i) = one_pos;
         T_arr.at(one_pos) = i;
+//        cout << J.at(i) << ' ';
     }
+//    cout << "\n";
 }
 
 void PolarCode::insert_least_reliable_rows_for_freezing_bits() {
@@ -250,10 +260,6 @@ void PolarCode::matrix_reduction(vector<vector<u8>>& matrix) {
 }
 
 void PolarCode::sort_by_right_one(vector<vector<u8>>& matrix) {
-    vector<std::pair<int, int> > right_one_pos(matrix.size());
-    for (size_t i = 0; i < right_one_pos.size(); ++i) {
-        right_one_pos.at(i) = { find_the_most_right_one_pos(matrix[i]), i };
-    }
     std::sort(matrix.begin(), matrix.end(), [this](vector<u8> & a, vector<u8> & b)
     {
         return (find_the_most_right_one_pos(a) > find_the_most_right_one_pos(b));
