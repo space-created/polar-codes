@@ -16,7 +16,7 @@ void PolarCode::build_constraint_matrix() {
     matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
 
-//    constraint_matrix.resize(512, vector<u8>(2048, 0));
+//    constraint_matrix.resize(512, vector<u8>(1024, 0));
 //    for (int i = 0; i < constraint_matrix.size(); ++i) {
 //        for (int j = 0; j < constraint_matrix.at(i).size(); ++j) {
 //            int a;
@@ -24,7 +24,8 @@ void PolarCode::build_constraint_matrix() {
 //            constraint_matrix[i][j] = (u8) a;
 //        }
 //    }
-
+//    cin.clear();
+//    cin.seekg(0, ios::beg);
     sort_by_right_one(constraint_matrix);
 
     J.resize(constraint_matrix.size(), -1);
@@ -35,6 +36,20 @@ void PolarCode::build_constraint_matrix() {
     insert_least_reliable_rows_for_freezing_bits();
     sort_by_right_one(constraint_matrix);
 
+//    cout << '\n';
+//    for (int i = 0; i < constraint_matrix.size(); ++i) {
+//        vector<vector<int>> temp(constraint_matrix.size());
+//        for (int j = 0; j < constraint_matrix.at(i).size(); ++j) {
+//            if (constraint_matrix.at(i).at(j) == 1) {
+//                temp.at(i).push_back(j);
+//            }
+//        }
+//        cout << '\n' << temp.at(i).size() << ' ';
+//        for (int j = 0; j < temp.at(i).size(); ++j) {
+//            cout << temp.at(i).at(j) << ' ' << flush;
+//        }
+//    }
+//    cout << '\n';
 //        for (auto & i : constraint_matrix) {
 //        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
 //            cout << (int) i.at(j) << ' ';

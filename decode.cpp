@@ -318,7 +318,6 @@ void PolarCode::continue_paths_unfrozen_bit(u16 phi) {
         contForks.at(l) = 0;
     }
     sort(probabilities.begin(), probabilities.end(), greater<double>());
-
     double threshold = probabilities.at((unsigned long) (rho - 1));
     u16 num_paths_continued = 0;
 
