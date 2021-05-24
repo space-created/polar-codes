@@ -3,9 +3,25 @@
 
 void PolarCode::build_constraint_matrix() {
     vector<vector<u8> > check_matrix = build_bch_check_matrix();
+    //    cout << "A matrix:\n";
+//    for (int i = 0; i < check_matrix.size(); ++i) {
+//        for (int j = 0; j < check_matrix.size(); ++j) {
+//            cout << (int) check_matrix.at(i).at(j) << ' ';
+//        }
+//        cout << '\n';
+//    }
+//    cout << '\n';
     vector<vector<u8> > f_matrix = kronecker_product();
 
     vector<vector<u8> > a_matrix = get_a_matrix(f_matrix);
+//    cout << "A matrix:\n";
+//    for (int i = 0; i < a_matrix.size(); ++i) {
+//        for (int j = 0; j < a_matrix.size(); ++j) {
+//            cout << (int) a_matrix.at(i).at(j) << ' ';
+//        }
+//        cout << '\n';
+//    }
+//    cout << '\n';
     vector<vector<u8> > a_transposed_matrix = transpose_matrix(a_matrix);
     vector<vector<u8> > h_a_t_product = get_matrix_product(check_matrix, a_transposed_matrix);
 
@@ -27,7 +43,15 @@ void PolarCode::build_constraint_matrix() {
 //    cin.clear();
 //    cin.seekg(0, ios::beg);
     sort_by_right_one(constraint_matrix);
-
+    cout << "First\n";
+    cout << (int) m << ' ' << constraint_matrix.size() << ' ' << constraint_matrix.at(0).size()  << '\n';
+    cout << '\n';
+    for (auto & i : constraint_matrix) {
+        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
+            cout << (int) i.at(j) << ' ';
+        }
+        cout << endl;
+    }
     J.resize(constraint_matrix.size(), -1);
     for (size_t i = 0; i < J.size(); ++i) {
         J.at(i) = find_the_most_right_one_pos(constraint_matrix.at(i));
@@ -49,13 +73,14 @@ void PolarCode::build_constraint_matrix() {
 //            cout << temp.at(i).at(j) << ' ' << flush;
 //        }
 //    }
-//    cout << '\n';
-//        for (auto & i : constraint_matrix) {
-//        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
-//            cout << (int) i.at(j) << ' ';
-//        }
-//        cout << endl;
-//    }
+    cout << (int) m << ' ' << constraint_matrix.size() << ' ' << constraint_matrix.at(0).size() << ' ' << J.at(0) << '\n';
+    cout << '\n';
+        for (auto & i : constraint_matrix) {
+            for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
+                cout << (int) i.at(j) << ' ';
+            }
+        cout << endl;
+    }
 
 
     J.resize(constraint_matrix.size(), -1);

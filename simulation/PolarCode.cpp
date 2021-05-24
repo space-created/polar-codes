@@ -58,12 +58,12 @@ void PolarCode::initialize_channel_order() {
                  return channel_vec.at(i1) > channel_vec.at(i2);
              }
          });
-//    cout << channel_order_descending.size() << '\n';
-//    cout << "channel_order_descending: ";
-//    for (int i = 0; i < channel_order_descending.size(); i++) {
-//        cout << channel_order_descending.at(i) << '\n';
-//    }
-//    cout << '\n';
+    cout << channel_order_descending.size() << '\n';
+    cout << "channel_order_descending: ";
+    for (int i = 0; i < channel_order_descending.size(); i++) {
+        cout << channel_order_descending.at(i) << ' ';
+    }
+    cout << '\n';
 }
 
 void PolarCode::initialize_frozen_bits() {
@@ -90,16 +90,18 @@ void PolarCode::initialize_frozen_bits() {
             frozen_bits.at(channel_order_descending.at(i)) = 1;
         }
     }
-//    cout << '\n'<< "frozen_bits: ";
-//    for (int i = 0; i < frozen_bits.size(); ++i) {
-//        cout << (int) frozen_bits.at(i) << ' ';
-//    }
-//    cout << '\n';
-//    cout << '\n'<< "static_frozen_channels: ";
-//    for (int i = 0; i < static_frozen_channels.size(); ++i) {
-//        cout << (int) static_frozen_channels.at(i) << ' ';
-//    }
-//    cout << '\n';
+    cout << '\n'<< "frozen_bits: ";
+    for (int i = 0; i < frozen_bits.size(); ++i) {
+        cout << (int) frozen_bits.at(i) << ' ';
+    }
+    cout << '\n';
+    cout << '\n';
+    cout << '\n'<< "static_frozen_channels: ";
+    for (int i = 0; i < static_frozen_channels.size(); ++i) {
+        cout << (int) static_frozen_channels.at(i) << ' ';
+    }
+    cout << '\n';
+    cout << '\n' << flush;
     crc_matrix.resize(crc_size);
     for (u8 bit = 0; bit < crc_size; ++bit) {
         crc_matrix.at(bit).resize(info_length);

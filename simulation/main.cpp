@@ -32,14 +32,13 @@ int main(int argc, char *argv[]) {
  * Number of dynamic constraints
  */
     vector<int> vec_q = {-1};
-
 /*
  * Specs
  */
 
-    u8 m = 11;
-    u16 info_length = 1536; // bch_code_distance = 12, 24
-    vector<u16> poly = {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1};
+//    u8 m = 11;
+//    u16 info_length = 1536; // bch_code_distance = 12, 24
+//    vector<u16> poly = {1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1};
 //                      x^11 + x^2 + 1
 
 //    u8 m = 10;
@@ -47,9 +46,9 @@ int main(int argc, char *argv[]) {
 //    vector<u16> poly = {1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1};
 //                      x^10 + x^3 + 1
 
-//    u8 m = 6;
-//    u16 info_length = 36; // bch_code_distance = 14
-//    vector<u16> poly = {1, 0, 0, 0, 0, 1, 1};
+    u8 m = 6;
+    u16 info_length = 22; // bch_code_distance = 14
+    vector<u16> poly = {1, 0, 0, 0, 0, 1, 1};
 //                      x^6 + x^1 + 1
 
 
@@ -63,13 +62,13 @@ int main(int argc, char *argv[]) {
  * Distances considered
  */
 //    11, 12, 16, 21, 24
-    vector<int> distances = {12};
+    vector<int> distances = {10};
 
 /*
  * Signal to noise ratio considered
  */
-    double ebno_log_min = 1.50;
-    double ebno_log_max = 1.51;
+    double ebno_log_min = 3.50;
+    double ebno_log_max = 3.51;
     double ebno_log_increment = 0.25;
 
     vector<double> ebno_vec;
@@ -90,7 +89,7 @@ int main(int argc, char *argv[]) {
 //            2,
 //            4,
 //            8,
-            16,
+//            16,
             32,
 //            64,
 //            256,

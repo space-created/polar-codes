@@ -2,3 +2,5 @@ dist
 cmake-build-debug
 .idea
 boost
+.vs
+out
