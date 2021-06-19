@@ -2,7 +2,7 @@
 CXX = g++
 CXXFLAGS = -g -Wall
 EXEC = simulate
-OBJDIR=dist
+OBJDIR=dist123
 OBJS = $(addprefix $(OBJDIR)/, \
 	main.o decode.o encode.o PolarCode.o util.o word_error_rate.o build_constraight_matrix.o GaloisFieldPolynomial.o)
 

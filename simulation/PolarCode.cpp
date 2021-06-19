@@ -19,6 +19,7 @@ void PolarCode::initialize_channel_order() {
             }
         }
     } else {
+        // the SIMPLIFIED GAUSSIAN APPROXIMATION was used here (http://dcn.icc.spbstu.ru/~petert/papers/rchain.pdf p.3)
         channel_vec.resize(1, 2 / sigma_sqr);
         for (int it = 0; it < m; ++it) {
             vector<double> temp = channel_vec;
@@ -58,12 +59,12 @@ void PolarCode::initialize_channel_order() {
                  return channel_vec.at(i1) > channel_vec.at(i2);
              }
          });
-    cout << channel_order_descending.size() << '\n';
-    cout << "channel_order_descending: ";
-    for (int i = 0; i < channel_order_descending.size(); i++) {
-        cout << channel_order_descending.at(i) << ' ';
-    }
-    cout << '\n';
+//    cout << channel_order_descending.size() << '\n';
+//    cout << "channel_order_descending: ";
+//    for (int i = 0; i < channel_order_descending.size(); i++) {
+//        cout << channel_order_descending.at(i) << ' ';
+//    }
+//    cout << '\n';
 }
 
 void PolarCode::initialize_frozen_bits() {
@@ -95,13 +96,13 @@ void PolarCode::initialize_frozen_bits() {
         cout << (int) frozen_bits.at(i) << ' ';
     }
     cout << '\n';
-    cout << '\n';
-    cout << '\n'<< "static_frozen_channels: ";
-    for (int i = 0; i < static_frozen_channels.size(); ++i) {
-        cout << (int) static_frozen_channels.at(i) << ' ';
-    }
-    cout << '\n';
-    cout << '\n' << flush;
+//    cout << '\n';
+//    cout << '\n'<< "static_frozen_channels: ";
+//    for (int i = 0; i < static_frozen_channels.size(); ++i) {
+//        cout << (int) static_frozen_channels.at(i) << ' ';
+//    }
+//    cout << '\n';
+//    cout << '\n' << flush;
     crc_matrix.resize(crc_size);
     for (u8 bit = 0; bit < crc_size; ++bit) {
         crc_matrix.at(bit).resize(info_length);

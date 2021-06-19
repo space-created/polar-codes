@@ -1,10 +1,11 @@
-set terminal pngcairo dashed size 1000,800
+set terminal pngcairo dashed size 1200,800
 set output 'scl64size_thesis.png'
-set title "WER x SNR (SCL 64 size for AWGN channel)"
+set tics font "sans,14"
+set title "График 3. Зависимость вероятности ошибки на кодовое слово\n от отношения сигнал/шум на бит для (64, 22, 10) кодов" font "sans,20"
 set key left bottom
-set key samplen 12 spacing 2 font "30,15"
-set xlabel "Signal-to-noise ratio [dB]"
-set ylabel "Word error rate"
+set key samplen 5 spacing 2 font "12,17"
+set xlabel "Отношение сигнал/шум [dB]" font "sans,18"
+set ylabel "Вер. ошибки на кодовое слово" font "sans,18"
 set logscale y 10
 set yrange [1e-6:1]
 set xrange [1.00:5.00]
@@ -13,6 +14,6 @@ set format y "10^{%L}"
 set grid mytics lt 1 lw 1 layerdefault back
 set grid xtics lt 0 lw 1 layerdefault back
 plot \
-'graph64thesis.txt' u 1:2 dt (10,10) lt 4 lw 3 pt 6 ps 1 with linespoints title 'Polar Subcode (64,22,10), L=32',\
-'graph64thesis.txt' u 1:3 dt 1 lt 1 lw 3 pt 5 ps 1 with linespoints title 'Polar Subcode (64,22,10) optimized weight spectrum, L=32'
+'graph64thesis.txt' u 1:2 dt (10,10) lt 4 lw 3 pt 6 ps 1 with linespoints title "Полярный подкод (64,22,10), L=32",\
+'graph64thesis.txt' u 1:3 dt 1 lt 1 lw 3 pt 5 ps 1 with linespoints title "Полярный подкод (64,22,10)\n оптимиз. весовой спектр, L=32"
 pause -1 "Hit any key to continue"

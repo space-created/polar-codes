@@ -13,7 +13,8 @@ int main(int argc, char *argv[]) {
 
     auto start = high_resolution_clock::now();
 //    freopen("out3.txt", "w", stdout);
-    freopen("matrix1.txt", "r", stdin);
+    bool shoud_read_matrix = true;
+    freopen("tmp.txt", "r", stdin);
 
 /*
  * Considered modulation channel
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]) {
 /*
  * Number of dynamic constraints
  */
-    vector<int> vec_q = {-1};
+    vector<int> vec_q = {0};
 /*
  * Specs
  */
@@ -47,13 +48,13 @@ int main(int argc, char *argv[]) {
 //                      x^10 + x^3 + 1
 
     u8 m = 6;
-    u16 info_length = 22; // bch_code_distance = 14
+    u16 info_length = 24; // bch_code_distance = 14
     vector<u16> poly = {1, 0, 0, 0, 0, 1, 1};
 //                      x^6 + x^1 + 1
 
 
 //    u8 m = 4;
-//    u16 info_length = 6; // bch_code_distance = 6
+//    u16 info_length = 7; // bch_code_distance = 6
 //    vector<u16> poly = {1, 1, 0, 0, 1};
 //                      x^4 + x^3 + 1
 
@@ -67,8 +68,8 @@ int main(int argc, char *argv[]) {
 /*
  * Signal to noise ratio considered
  */
-    double ebno_log_min = 3.50;
-    double ebno_log_max = 3.51;
+    double ebno_log_min = 1.00;
+    double ebno_log_max = 1.01;
     double ebno_log_increment = 0.25;
 
     vector<double> ebno_vec;
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) {
  * Simulation runs
  */
     const size_t min_error_amount = 100;
-    const size_t max_runs_amount = 10000;
+    const size_t max_runs_amount = 1000000;
 /*
  * List sizes considered
  */
@@ -90,8 +91,8 @@ int main(int argc, char *argv[]) {
 //            4,
 //            8,
 //            16,
-            32,
-//            64,
+//            32,
+            64,
 //            256,
     };
 
@@ -113,38 +114,43 @@ int main(int argc, char *argv[]) {
         }
 
         /*
-         * Main loop
+         * Main loop 0.0025898764 0.0026661035 0.0024982067 0.0023759674
+
          */
-        for (int dist = 0; dist < distances.size(); ++dist) {
+
+            for (int dist = 0; dist < distances.size(); ++dist) {
             cout << "Distance: " << distances.at(dist) << "\n";
-            u16 bch_code_distance = distances.at(dist);
+                u16 bch_code_distance = distances.at(dist);
             cout << "SNR \t\tNoiseStdDev \t\t";
             for (int list_size_num = 0; list_size_num < list_size_arr.size(); ++list_size_num) {
                 cout << list_size_arr.at(list_size_num) << "         \t\t";
             }
             cout << "\n";
 
-            for (int ebno_num = 0; ebno_num < ebno_vec.size(); ++ebno_num) {
+                for (int ebno_num = 0; ebno_num < ebno_vec.size(); ++ebno_num) {
                 cout << fixed << setprecision(2) << ebno_vec.at(ebno_num) << "\t\t";
-                double noiseStdDev = sqrt(
-                        0.5 * pow(10, -ebno_vec.at(ebno_num) / 10) / ((double) info_length / (double) (word_length)));
+                    double noiseStdDev = sqrt(
+                            0.5 * pow(10, -ebno_vec.at(ebno_num) / 10) /
+                            ((double) info_length / (double) (word_length)));
                 cout << fixed << setprecision(11) << noiseStdDev << "\t\t" << flush;
 
-                PolarCode polar_code(m, info_length, is_BEC, epsilon_BEC, crc_size, apply_constraints, poly,
-                                     bch_code_distance, vec_q.at(q_num),
-                                     noiseStdDev * noiseStdDev);
+                    PolarCode polar_code(m, info_length, is_BEC, epsilon_BEC, crc_size, apply_constraints, poly,
+                                         bch_code_distance, vec_q.at(q_num),
+                                         noiseStdDev * noiseStdDev,
+                                         shoud_read_matrix);
 
-                for (int l_cur_size_index = 0; l_cur_size_index < list_size_arr.size(); ++l_cur_size_index) {
-                    double word_error_rate = polar_code.get_word_error_rate(
-                            noiseStdDev,
-                            list_size_arr.at(l_cur_size_index),
-                            min_error_amount,
-                            max_runs_amount);
-                    cout << fixed << setprecision(10) << word_error_rate << "\t\t" << flush;
+                    for (int l_cur_size_index = 0; l_cur_size_index < list_size_arr.size(); ++l_cur_size_index) {
+                        double word_error_rate = polar_code.get_word_error_rate(
+                                noiseStdDev,
+                                list_size_arr.at(l_cur_size_index),
+                                min_error_amount,
+                                max_runs_amount);
+                        cout << fixed << setprecision(10) << word_error_rate << "\t\t" << flush;
+                    }
+                    cout << "\n";
                 }
-                cout << "\n";
             }
-        }
+
     }
     auto stop = high_resolution_clock::now();
 

@@ -1,10 +1,11 @@
-set terminal pngcairo dashed size 1000,800
-set output 'scl2048size_thesis1.png'
-set title "WER x SNR (SCL 2048 size for AWGN channel)"
+set terminal pngcairo dashed size 1200,800
+set output 'scl2048size_thesis12.png'
+set tics font "sans,14"
+set title "График 1. Зависимость вероятности ошибки на кодовое слово\n от отношения сигнал/шум на бит для (2048, 1536, 12) кодов" font "sans,20		"
 set key left bottom
-set key samplen 12 spacing 2 font "30,15"
-set xlabel "Signal-to-noise ratio [dB]"
-set ylabel "Word error rate"
+set key samplen 5 spacing 2 font "12,14"
+set xlabel "Отношение сигнал/шум [dB]" font "sans,18"
+set ylabel "Вер. ошибки на кодовое слово" font "sans,18"
 set logscale y 10
 set yrange [1e-6:1]
 set xrange [1.75:3.25]
@@ -13,8 +14,8 @@ set format y "10^{%L}"
 set grid mytics lt 1 lw 1 layerdefault back
 set grid xtics lt 0 lw 1 layerdefault back
 plot \
-'graph2048thesis.txt' u 1:6 dt (10,10) lt 4 lw 3 pt 6 ps 1 with linespoints title 'Polar Subcode (2048,1536,12), q=0, L=8',\
-'graph2048thesis.txt' u 1:7 dt 1 lt 4 lw 3 pt 5 ps 1 with linespoints title 'Polar Subcode (2048,1536,12), q=0, L=32',\
-'graph2048thesis.txt' u 1:9 dt (10,10) lt 1 lw 3 pt 6 ps 1 with linespoints title 'Polar Subcode (2048,1536,12), q=64, L=8, Modified V',\
-'graph2048thesis.txt' u 1:10 dt 1 lt 1 lw 3 pt 5 ps 1 with linespoints title 'Polar Subcode (2048,1536,12), q=64, L=32, Modified V'
+'graph2048thesis.txt' u 1:6 dt (10,10) lt 4 lw 3 pt 6 ps 1 with linespoints title 'Полярный подкод (2048,1536,12), L=8, q=0',\
+'graph2048thesis.txt' u 1:7 dt 1 lt 4 lw 3 pt 5 ps 1 with linespoints title 'Полярный подкод (2048,1536,12), L=32, q=0',\
+'graph2048thesis.txt' u 1:9 dt (10,10) lt 1 lw 3 pt 6 ps 1 with linespoints title 'Полярный подкод (2048,1536,12), L=8, V мод., q=64',\
+'graph2048thesis.txt' u 1:10 dt 1 lt 1 lw 3 pt 5 ps 1 with linespoints title 'Полярный подкод (2048,1536,12), L=32, V мод., q=64'
 pause -1 "Hit any key to continue"

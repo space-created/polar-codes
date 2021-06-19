@@ -1,6 +1,11 @@
-dist
+optimizer/dist*
+simulation/dist*
 cmake-build-debug
 .idea
 boost
 .vs
 out
+*exe
+simulation/tmp.txt
+optimizer/tmp.txt
+dist

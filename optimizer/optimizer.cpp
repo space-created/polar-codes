@@ -348,7 +348,7 @@ int compareTwoMonomials(vector<int> monomial_a, vector<int> monomial_b) {
     }
 }
 
-vector<vector<int>> get_monomials_order(vector<vector<int>> monomials) {
+vector<vector<int>> get_monomials_order(vector<vector<int>> monomials, vector<int> info_indexes) {
     vector<vector<int>> monomials_order(monomials.size(), vector<int>(monomials.size(), 0));
     for (int i = 0; i < monomials.size(); ++i) {
         for (int j = 0; j < monomials.size(); ++j) {
@@ -359,6 +359,20 @@ vector<vector<int>> get_monomials_order(vector<vector<int>> monomials) {
             }
         }
     }
+    ll lambda = 0;
+    for (int ii = 0; ii < info_indexes.size(); ++ii) {
+        int ind = info_indexes.at(ii);
+        int ff = 0;
+        for (int i = ind + 1; i < monomials_order.at(ind).size(); ++i) {
+            if (monomials_order.at(ind).at(i) == -1) {
+
+                ff++;
+            }
+        }
+        lambda += pow(2, ff);
+//        cout << ind << " " << ff << "\n";
+    }
+//    cout << "LAMBDA= " << lambda << "\n";
     return monomials_order;
 }
 
@@ -510,9 +524,9 @@ void apply_random_constraints(vector<pair<bool, vector<int> > >& dynamic_constra
         for (int j = 0; j < info_set_for_frozen_bit.at(rows_to_add.at(i)).size(); ++j) {
             uniform_int_distribution<> dis(0, 1);
             int random_number = dis(generator);
-//                if (random_number == 1) {
-//                    dynamic_constraints.at(rows_to_add.at(i)).second.push_back(info_set_for_frozen_bit.at(rows_to_add.at(i)).at(j));
-//                }
+                if (random_number == 1) {
+                    dynamic_constraints.at(rows_to_add.at(i)).second.push_back(info_set_for_frozen_bit.at(rows_to_add.at(i)).at(j));
+                }
         }
     }
 
@@ -555,7 +569,7 @@ int mainFunc(std::shared_ptr<mc::MATLABApplication> app, const int argc, const c
 {
     cin.tie(nullptr);
     ios_base::sync_with_stdio(false);
-    freopen("input6b.txt", "r", stdin);
+    freopen("input14.txt", "r", stdin);
 //    freopen("output.txt", "w", stdout);
     auto start = high_resolution_clock::now();
     int snr_number = 0;
@@ -578,7 +592,6 @@ int mainFunc(std::shared_ptr<mc::MATLABApplication> app, const int argc, const c
         double SNRb;
         cin >> SNRb;
         vector<int> frozen_bits(n, 0);
-
         for (int i = 0; i < frozen_bits.size(); ++i) {
             cin >> frozen_bits.at(i);
             if (frozen_bits.at(i) == 1) {
@@ -620,18 +633,21 @@ int mainFunc(std::shared_ptr<mc::MATLABApplication> app, const int argc, const c
             vector < pair < bool, vector < int > > > dynamic_constraints = base_dynamic_constraints;
             vector <pair<int, bool>> red_indexes;
             vector<int> red_indexes_values(n, -2);
+            vector<int> info_indexes;
             for (int i = 0; i < frozen_bits.size(); ++i) {
                 if (frozen_bits.at(i) == 0) {
                     if (i < last_frozen_pos) {
                         red_indexes.push_back({i, 1});
                         red_indexes_values.at(i) = -1;
+                        info_indexes.push_back(i);
+
                     }
                 }
             }
 
             apply_random_constraints(dynamic_constraints, frozen_bits, rows_to_add);
 
-            simplify_matrix(dynamic_constraints, frozen_bits);
+//            simplify_matrix(dynamic_constraints, frozen_bits);
 //            cout << "\ndynamic_constraints:\n";
 //            for (int i = 0; i < dynamic_constraints.size(); ++i) {
 //                if (dynamic_constraints.at(i).first && !dynamic_constraints.at(i).second.empty()) {
@@ -656,7 +672,7 @@ int mainFunc(std::shared_ptr<mc::MATLABApplication> app, const int argc, const c
 //    cout << "Time: " << duration.count() << '\n';
 
             vector <vector<int>> monomials = get_monomials(m);
-            vector <vector<int>> monomials_order = get_monomials_order(monomials);
+            vector <vector<int>> monomials_order = get_monomials_order(monomials, info_indexes);
             vector<ll> result_large = computeWEF(n, last_frozen_pos, monomials_order,
                                                  red_indexes, dynamic_constraints, red_indexes_values);
 

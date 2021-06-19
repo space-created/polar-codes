@@ -30,7 +30,8 @@ public:
               vector<u16> poly,
               u16 bch_distance,
               int q,
-              double sigma_sqr)
+              double sigma_sqr,
+              bool shoud_read_matrix)
             : m(num_layers),
               info_length(info_length),
               is_BEC(is_BEC),
@@ -40,7 +41,8 @@ public:
               poly(std::move(poly)),
               bch_distance(bch_distance),
               q(q),
-              sigma_sqr(sigma_sqr) {
+              sigma_sqr(sigma_sqr),
+              shoud_read_matrix(shoud_read_matrix) {
 
         word_length = (u16) (1 << m);
         frozen_bits.resize(word_length, 0);
@@ -72,6 +74,7 @@ private:
     u16 crc_size;
 
     bool is_BEC;
+    bool shoud_read_matrix;
     double epsilon;
     double sigma_sqr;
 

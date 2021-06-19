@@ -1,27 +1,15 @@
 #include "GaloisFieldPolynomial.h"
 #include "PolarCode.h"
-
+/*
+ * Method for building EBCH code constraint matrix (https://arxiv.org/abs/1511.01646 p.4)
+ */
 void PolarCode::build_constraint_matrix() {
     vector<vector<u8> > check_matrix = build_bch_check_matrix();
-    //    cout << "A matrix:\n";
-//    for (int i = 0; i < check_matrix.size(); ++i) {
-//        for (int j = 0; j < check_matrix.size(); ++j) {
-//            cout << (int) check_matrix.at(i).at(j) << ' ';
-//        }
-//        cout << '\n';
-//    }
-//    cout << '\n';
+
     vector<vector<u8> > f_matrix = kronecker_product();
 
     vector<vector<u8> > a_matrix = get_a_matrix(f_matrix);
-//    cout << "A matrix:\n";
-//    for (int i = 0; i < a_matrix.size(); ++i) {
-//        for (int j = 0; j < a_matrix.size(); ++j) {
-//            cout << (int) a_matrix.at(i).at(j) << ' ';
-//        }
-//        cout << '\n';
-//    }
-//    cout << '\n';
+
     vector<vector<u8> > a_transposed_matrix = transpose_matrix(a_matrix);
     vector<vector<u8> > h_a_t_product = get_matrix_product(check_matrix, a_transposed_matrix);
 
@@ -32,16 +20,7 @@ void PolarCode::build_constraint_matrix() {
     matrix_reduction(h_a_t_product);
     remove_zero_rows(h_a_t_product);
 
-//    constraint_matrix.resize(512, vector<u8>(1024, 0));
-//    for (int i = 0; i < constraint_matrix.size(); ++i) {
-//        for (int j = 0; j < constraint_matrix.at(i).size(); ++j) {
-//            int a;
-//            cin >> a;
-//            constraint_matrix[i][j] = (u8) a;
-//        }
-//    }
-//    cin.clear();
-//    cin.seekg(0, ios::beg);
+
     sort_by_right_one(constraint_matrix);
     cout << "First\n";
     cout << (int) m << ' ' << constraint_matrix.size() << ' ' << constraint_matrix.at(0).size()  << '\n';
@@ -59,27 +38,46 @@ void PolarCode::build_constraint_matrix() {
     initialize_frozen_bits();
     insert_least_reliable_rows_for_freezing_bits();
     sort_by_right_one(constraint_matrix);
-
-//    cout << '\n';
-//    for (int i = 0; i < constraint_matrix.size(); ++i) {
-//        vector<vector<int>> temp(constraint_matrix.size());
-//        for (int j = 0; j < constraint_matrix.at(i).size(); ++j) {
-//            if (constraint_matrix.at(i).at(j) == 1) {
-//                temp.at(i).push_back(j);
-//            }
-//        }
-//        cout << '\n' << temp.at(i).size() << ' ';
-//        for (int j = 0; j < temp.at(i).size(); ++j) {
-//            cout << temp.at(i).at(j) << ' ' << flush;
-//        }
-//    }
     cout << (int) m << ' ' << constraint_matrix.size() << ' ' << constraint_matrix.at(0).size() << ' ' << J.at(0) << '\n';
     cout << '\n';
-        for (auto & i : constraint_matrix) {
-            for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
-                cout << (int) i.at(j) << ' ';
-            }
+    for (auto & i : constraint_matrix) {
+        for (size_t j = 0; j < constraint_matrix.at(0).size(); ++j) {
+            cout << (int) i.at(j) << ' ';
+        }
         cout << endl;
+    }
+
+    if (shoud_read_matrix) {
+        for (int i = 0; i < constraint_matrix.size(); ++i) {
+            int pos = find_the_most_right_one_pos(constraint_matrix.at(i));
+            for (int j = 0; j < pos; ++j) {
+                    constraint_matrix.at(i).at(j) = 0;
+            }
+        }
+        int s;
+        cin >> s;
+//        cout << s << flush;
+        for (int i = 0; i < s; ++i) {
+            int size_c, frozen_b;
+            cin >> size_c >> frozen_b;
+            int m_i = 0;
+            for (int ii = 0; ii < constraint_matrix.size(); ++ii) {
+                if (constraint_matrix.at(ii).at(frozen_b) == 1) {
+                    m_i = ii;
+                    break;
+                }
+            }
+            for (int ii = 0; ii < constraint_matrix.at(m_i).size(); ++ii) {
+                if (ii != frozen_b) {
+                    constraint_matrix.at(m_i).at(ii) = 0;
+                }
+            }
+            for (int j = 0; j < size_c; ++j) {
+                int ind = 0;
+                cin >> ind;
+                constraint_matrix.at(m_i).at(ind) = 1;
+            }
+        }
     }
 
 
